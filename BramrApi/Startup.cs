@@ -41,17 +41,25 @@ namespace BramrApi
                     mysqlOptions.DisableBackslashEscaping();
                 }));
 
-            //services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(identityConnectionString));
+            /// Default identity user
+            services.AddIdentityCore<IdentityUser>(options => {
 
-            /// Default identity
-            services.AddIdentityCore<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                /// Paswword must be atleast 8 characters long
+                /// must contain a digit, uppercase and 1 special character
+                options.SignIn.RequireConfirmedAccount = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireDigit = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredUniqueChars = 1;
+                options.Password.RequireLowercase = true;
+
+            }).AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -68,6 +76,23 @@ namespace BramrApi
             {
                 endpoints.MapControllers();
             });
+
+#if DEBUG
+            CreateLocalAccounts(serviceProvider).Wait();
+#endif
+        }
+
+        private async Task CreateLocalAccounts(IServiceProvider serviceProvider)
+        {
+            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+            if (await userManager.FindByEmailAsync("admin@bramr.tech") == null)
+            {
+                await userManager.CreateAsync(new IdentityUser {
+                    Email = "admin@bramr.tech",
+                    UserName = "Admin"
+                }, "XtS8tT~w");
+            }
         }
     }
 }
