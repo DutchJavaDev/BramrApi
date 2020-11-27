@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using BramrApi.Service.Interfaces;
+using BramrApi.Service;
 
 namespace BramrApi
 {
@@ -47,10 +49,12 @@ namespace BramrApi
                 options.Password.RequireUppercase = true;
                 options.Password.RequiredUniqueChars = 1;
                 options.Password.RequireLowercase = true;
-
             }).AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddControllers();
+            services.AddControllers(); 
+
+            /// Services
+            services.AddSingleton<IServerBlockWriterService, ServerBlockWriterService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
