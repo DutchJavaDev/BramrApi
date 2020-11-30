@@ -43,8 +43,8 @@ namespace BramrApi.Controllers
                 // Check if there is a identity user with this email
                 if (await UserManager.FindByEmailAsync(model.Email) != null)
                 {
-                    
-                    // There is, goodbeye
+
+                    // There is, goodbeye 👋
                     return ApiResponse.Error("This email has already been taken"); 
                 }
 
@@ -62,6 +62,7 @@ namespace BramrApi.Controllers
 
                 if (result.Succeeded)
                 {
+                    //👋
                     return ApiResponse.Oke("Account has been created");
                 }
                 else
@@ -75,10 +76,12 @@ namespace BramrApi.Controllers
                         builder.AppendLine($"[{error.Code}]: {error.Description}");
                     }
 
+                    //👋
                     return ApiResponse.Error("Could not compleed action", builder.ToString()); 
                 }
             }
 
+            //👋
             // Model is invalid
             return ApiResponse.Error("Not all required fields have been filled in"); 
         }
