@@ -55,6 +55,7 @@ namespace BramrApi
 
             /// Services
             services.AddSingleton<IServerBlockWriterService, ServerBlockWriterService>();
+            services.AddSingleton<ICommandService, CommandService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
