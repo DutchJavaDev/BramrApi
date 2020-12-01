@@ -50,7 +50,7 @@ namespace BramrApi.Service
                 mainBlock.AppendLine(line.Trim());
             }
 
-            var serverBlock = FindServerBlock(url, lines);
+            var serverBlock = FindServerBlock(alias, lines);
 
             WriteConfig(mainBlock.ToString().Replace(serverBlock, string.Empty));
         }
