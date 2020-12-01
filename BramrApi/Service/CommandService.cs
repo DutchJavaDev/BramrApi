@@ -39,6 +39,29 @@ namespace BramrApi.Service
             }
         }
 
+        public void DeleteWebsiteDirectory(string name)
+        {
+            var directory = new DirectoryInfo(Path.Combine(WEBSITES_DIRECTORY,name));
+
+            // Delete files
+            foreach (var file in directory.GetFiles())
+            {
+                File.Delete(file.FullName);
+            }
+
+            // Delete directory + files
+            // TODO make this recursive instead!
+            foreach (var dir in directory.GetDirectories())
+            {
+                foreach (var file in dir.GetFiles())
+                {
+                    File.Delete(file.FullName);
+                }
+
+                Directory.Delete(dir.FullName);
+            }
+        }
+
         public async void ReloadNginx()
         {
             await ExecuteCommand();
