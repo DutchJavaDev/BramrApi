@@ -60,6 +60,8 @@ namespace BramrApi.Service
 
                 Directory.Delete(dir.FullName);
             }
+
+            Directory.Delete(Path.Combine(WEBSITES_DIRECTORY, name));
         }
 
         public async void ReloadNginx()
