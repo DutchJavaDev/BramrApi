@@ -31,7 +31,7 @@ namespace BramrApi
 #else
             var identityConnectionString = Configuration.GetConnectionString("LiveConnection");
 #endif
-
+            /// Allow cors
             services.AddCors(options => {
                 options.AddPolicy("CorsPolicy",
                 builder => builder.AllowAnyOrigin()
