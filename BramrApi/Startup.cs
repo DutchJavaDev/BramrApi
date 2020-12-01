@@ -31,6 +31,14 @@ namespace BramrApi
 #else
             var identityConnectionString = Configuration.GetConnectionString("LiveConnection");
 #endif
+
+            services.AddCors(options => {
+                options.AddPolicy("CorsPolicy",
+                builder => builder.AllowAnyOrigin()
+                                  .AllowAnyMethod()
+                                  .AllowAnyHeader());
+            });
+
             /// Database connection for identity
             services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(identityConnectionString,
                 mysqlOptions => {
@@ -61,6 +69,8 @@ namespace BramrApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
+            app.UseCors("CorsPolicy");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
