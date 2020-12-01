@@ -21,13 +21,13 @@ namespace BramrApi.Service
                 Directory.CreateDirectory(WEBSITES_DIRECTORY);
         }
 
-        public bool CreateWebsiteDirectory(string name)
+        public bool CreateWebsiteDirectory(string dir)
         {
-            if (Directory.Exists(Path.Combine(WEBSITES_DIRECTORY, name))) return false;
+            if (Directory.Exists(Path.Combine(WEBSITES_DIRECTORY, dir))) return false;
 
             try
             {
-                var directory = Directory.CreateDirectory(Path.Combine(WEBSITES_DIRECTORY, name));
+                var directory = Directory.CreateDirectory(Path.Combine(WEBSITES_DIRECTORY, dir));
                 
                 var indexDirectory = directory.CreateSubdirectory(INDEX_DIRECTORY);
 
