@@ -6,6 +6,8 @@ namespace BramrApi.Service.Interfaces
     {
         bool CreateWebsiteDirectory(string name);
 
+        void DeleteWebsiteDirectory(string name);
+
         Task<bool> TestNginxConfiguration();
 
         void ReloadNginx();
