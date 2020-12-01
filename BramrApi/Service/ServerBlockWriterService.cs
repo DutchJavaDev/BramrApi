@@ -36,7 +36,7 @@ namespace BramrApi.Service
                 mainBlock.AppendLine(line.Trim());
             }
 
-            WriteConfig(mainBlock.ToString().Replace("#next_block", serverBlock));
+            WriteConfig(mainBlock.ToString().Replace("#next_block", serverBlock).Trim());
         }
 
         public async void DeleteServerBlock(string url, string alias)
@@ -52,7 +52,7 @@ namespace BramrApi.Service
 
             var serverBlock = FindServerBlock(alias, lines);
 
-            WriteConfig(mainBlock.ToString().Replace(serverBlock, string.Empty));
+            WriteConfig(mainBlock.ToString().Replace(serverBlock, string.Empty).Trim());
         }
 
         public async Task<bool> BlockExists(string url) => (await ReadConfig()).Contains(url);
