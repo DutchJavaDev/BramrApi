@@ -35,7 +35,7 @@ namespace BramrApi.Controllers
         /// </summary>
         /// <param name="model">Class with required fields needed to create a account</param>
         /// <returns></returns>
-        [HttpGet("Account")]
+        [HttpPost("Account")]
         public async Task<ApiResponse> RegisterAccount([FromBody] RegisterModel model)
         {
             if (ModelState.IsValid)
