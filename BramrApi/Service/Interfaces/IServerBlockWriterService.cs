@@ -1,8 +1,13 @@
-﻿namespace BramrApi.Service.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace BramrApi.Service.Interfaces
 {
     public interface IServerBlockWriterService
     {
-        string LoadFile(string fileName);
-        string CreateServerBlock(string url, string alias);
+        void CreateServerBlock(string url, string alias);
+
+        void DeleteServerBlock(string url, string alias);
+
+        Task<bool> BlockExists(string url);
     }
 }
