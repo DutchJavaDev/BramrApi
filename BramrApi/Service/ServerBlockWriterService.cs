@@ -23,11 +23,11 @@ namespace BramrApi.Service
             Template = File.ReadAllText(TEMPLATE_FILE_PATH);
         }
 
-        public async void CreateServerBlock(string url, string alias)
+        public async void CreateServerBlock(string url, string dir)
         {
             var lines = (await ReadConfig()).Split('\n');
 
-            var serverBlock = CreateTemplate(url, Template);
+            var serverBlock = CreateTemplate(url, dir);
 
             var mainBlock = new StringBuilder();
 
@@ -61,18 +61,22 @@ namespace BramrApi.Service
 
         private async Task<string> ReadConfig() => await File.ReadAllTextAsync(CONFIG_FILE_PATH);
 
-        private string CreateTemplate(string url, string alias)
+        private string CreateTemplate(string url, string folder)
         {
             var builder = new StringBuilder();
+            
+            builder.AppendLine($@"#start_{folder}");
 
             foreach (var line in Template.Split('\n'))
             {
-                builder.AppendLine(line.Replace("[URL]", url).Replace("[ALIAS]", alias));
+                builder.AppendLine(line.Trim());
             }
 
+            builder.AppendLine($@"#end_{folder}");
+            
             builder.AppendLine("#next_block\n");
 
-            return builder.ToString();
+            return builder.ToString().Replace("[URL]", url).Replace("[USER_FOLDER]", folder);
         }
 
         private string FindServerBlock(string name, string[] lines)
