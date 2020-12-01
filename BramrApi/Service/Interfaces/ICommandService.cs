@@ -2,7 +2,7 @@
 
 namespace BramrApi.Service.Interfaces
 {
-    interface ICommandService
+    public interface ICommandService
     {
         bool CreateWebsiteDirectory(string name);
 
