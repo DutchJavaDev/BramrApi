@@ -1,4 +1,6 @@
-﻿namespace BramrApi.Data
+﻿using System.Collections.Generic;
+
+namespace BramrApi.Data
 {
     public class ApiResponse
     {
@@ -10,17 +12,16 @@
 
         public object RequestedData { get; private set; } = string.Empty;
 
+        public ICollection<string> Errors { get; private set; } = new List<string>();
+
         public static ApiResponse Oke(string message = "", object data = null)
         {
-            if (data == null)
-                return new ApiResponse { Success = true, Message = message };
-            else
-                return new ApiResponse { Success = true, Message = message, RequestedData = data };
+            return new ApiResponse { Success = true, Message = message, RequestedData = data };
         }
 
-        public static ApiResponse Error(string message = "", object data = null)
+        public static ApiResponse Error(string message = "", object data = null, ICollection<string> errors = null)
         {
-            return new ApiResponse { Success = false, Message = message };
+            return new ApiResponse { Success = false, Message = message, RequestedData = data, Errors = errors };
         }
     }
 }

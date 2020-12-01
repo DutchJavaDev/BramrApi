@@ -2,7 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Text;
+using System.Collections.Generic;
+using System;
 
 namespace BramrApi.Controllers
 {
@@ -69,15 +70,15 @@ namespace BramrApi.Controllers
                 {
                     // failed to create user
                     // send errors for easy debuggin, remove later !REMEMBER lol
-                    var builder = new StringBuilder();
+                    var list = new List<string>();
 
                     foreach (var error in result.Errors)
                     {
-                        builder.AppendLine($"[{error.Code}]: {error.Description}");
+                        list.Add($"{error.Code}".Trim());
                     }
 
                     //👋
-                    return ApiResponse.Error("Could not compleed action", builder.ToString()); 
+                    return ApiResponse.Error("Could not compleed action", errors: list); 
                 }
             }
 
