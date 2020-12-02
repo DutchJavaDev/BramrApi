@@ -22,14 +22,19 @@ namespace BramrApi
         }
 
         public IConfiguration Configuration { get; }
+        public string IdentityConnectionString { get; set; }
+        public string BramrConnectionString { get; set; }
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
 #if DEBUG
-            var identityConnectionString = Configuration.GetConnectionString("LocalConnection");
+            IdentityConnectionString = Configuration.GetConnectionString("LocalIdentityConnection");
+            BramrConnectionString = Configuration.GetConnectionString("LocalDatabaseConnection");
 #else
-            var identityConnectionString = Configuration.GetConnectionString("LiveConnection");
+            IdentityConnectionString = Configuration.GetConnectionString("LiveIdentityConnection");
+            BramrConnectionString = Configuration.GetConnectionString("LiveDatabaseConnection");
 #endif
             /// Allow cors
             services.AddCors(options => {
@@ -40,7 +45,7 @@ namespace BramrApi
             });
 
             /// Database connection for identity
-            services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(identityConnectionString,
+            services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(IdentityConnectionString,
                 mysqlOptions => {
                     mysqlOptions.ServerVersion(new Version(10, 4, 8), ServerType.MariaDb);
                     mysqlOptions.DisableBackslashEscaping();
@@ -62,8 +67,9 @@ namespace BramrApi
             services.AddControllers(); 
 
             /// Services
-            services.AddSingleton<IServerBlockWriterService, ServerBlockWriterService>();
-            services.AddSingleton<ICommandService, CommandService>();
+            services.AddScoped<IServerBlockWriterService, ServerBlockWriterService>();
+            services.AddScoped<ICommandService, CommandService>();
+            services.AddSingleton<IDatabase, DatabaseService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -87,22 +93,25 @@ namespace BramrApi
                 endpoints.MapControllers();
             });
 
-#if DEBUG
-            CreateLocalAccounts(serviceProvider).Wait();
-#endif
+            Init(serviceProvider).Wait();
         }
 
-        private async Task CreateLocalAccounts(IServiceProvider serviceProvider)
+        private async Task Init(IServiceProvider serviceProvider)
         {
+            //serviceProvider.GetRequiredService<IDatabase>().SetConnectionString(BramrConnectionString);
+
+#if DEBUG
             var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
             if (await userManager.FindByEmailAsync("admin@bramr.tech") == null)
             {
-                await userManager.CreateAsync(new IdentityUser {
+                await userManager.CreateAsync(new IdentityUser
+                {
                     Email = "admin@bramr.tech",
                     UserName = "Admin"
                 }, "XtS8tT~w");
             }
+#endif
         }
     }
 }
