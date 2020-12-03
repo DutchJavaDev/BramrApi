@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using BramrApi.Data;
+using System.Collections.Generic;
 
 namespace BramrApi.Controllers
 {
@@ -18,15 +19,25 @@ namespace BramrApi.Controllers
             this.signInManager = signInManager;
         }
 
+        [HttpPost("account")]
         public async Task<ApiResponse> Login([FromBody] LoginModel model)
         {
-
             if (ModelState.IsValid)
             {
-                if (await userManager.FindByEmailAsync(model.Email) == null)
+                var user = await userManager.FindByEmailAsync(model.Email);
+                if (user == null)
                     return ApiResponse.Error("User not found!");
 
+                var result = await signInManager.PasswordSignInAsync(user, model.Password, true, false);
 
+                if (result.Succeeded)
+                {
+                    return ApiResponse.Oke("Logged in!", data: user.Id);
+                }
+                else
+                {
+                    return ApiResponse.Error("Failed to login");
+                }
             }
 
             return ApiResponse.Error("Not all required fields have been filled in");
