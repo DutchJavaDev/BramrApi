@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 namespace BramrApi.Data
 {
     public class ApiResponse
     {
-        private ApiResponse() { }
+        public ApiResponse() { }
 
         public bool Success { get; private set; } = false;
 
@@ -23,5 +24,21 @@ namespace BramrApi.Data
         {
             return new ApiResponse { Success = false, Message = message, RequestedData = data, Errors = errors };
         }
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+
+            builder.AppendLine($"Sucess: {Success}");
+            builder.AppendLine($"Message: {Message}");
+            builder.AppendLine("\n[Errors]");
+
+            foreach (var error in Errors)
+            {
+                builder.AppendLine($"{error}");
+            }
+
+            return $"{Success} {Message} {RequestedData}";
+        }
+
     }
 }
