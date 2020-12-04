@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BramrApi.Migrations
 {
-    public partial class Init : Migration
+    public partial class Initail_db : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

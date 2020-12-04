@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BramrApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20201125095808_Init")]
-    partial class Init
+    [Migration("20201204103714_Initail_db")]
+    partial class Initail_db
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
