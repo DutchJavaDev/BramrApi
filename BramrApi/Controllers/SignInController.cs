@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BramrApi.Data;
 using BramrApi.Utils;
 using Microsoft.AspNetCore.Authorization;
+using BramrApi.Service.Interfaces;
 
 namespace BramrApi.Controllers
 {
@@ -18,10 +19,13 @@ namespace BramrApi.Controllers
         // Provides the APIs for managing user logins identity
         private readonly SignInManager<IdentityUser> signInManager;
 
-        public SignInController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        private readonly ISMTP mailClient;
+
+        public SignInController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ISMTP mailClient)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.mailClient = mailClient;
         }
 
         /// <summary>
