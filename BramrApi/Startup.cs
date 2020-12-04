@@ -94,6 +94,7 @@ namespace BramrApi
             services.AddScoped<IServerBlockWriterService, ServerBlockWriterService>();
             services.AddScoped<ICommandService, CommandService>();
             services.AddSingleton<IDatabase, DatabaseService>();
+            services.AddScoped<ISMTP, SMTPMailService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
