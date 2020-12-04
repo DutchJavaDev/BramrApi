@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Sentry.Extensibility;
 
 namespace BramrApi
 {
@@ -20,6 +15,17 @@ namespace BramrApi
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.UseSentry(options => {
+
+#if DEBUG
+                        options.Debug = true;
+#else
+                        options.Debug = false;
+#endif
+                        options.ServerName = "Bramr-Server";
+                        options.MaxRequestBodySize = RequestSize.Always;
+                        options.Dsn = "https://78a1efb174294624b4eeede7c855fc13@o203192.ingest.sentry.io/5544818";
+                    });
                     webBuilder.UseStartup<Startup>();
                 });
     }
