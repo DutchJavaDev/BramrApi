@@ -36,8 +36,8 @@ namespace BramrApi.Controllers
         /// </summary>
         /// <param name="model">Class with required fields needed to create a account</param>
         /// <returns></returns>
-        [HttpPost("Account")]
-        public async Task<ApiResponse> RegisterAccount([FromBody] RegisterModel model)
+        [HttpPost()]
+        public async Task<ApiResponse> Index([FromBody] RegisterModel model)
         {
             if (ModelState.IsValid)
             {
@@ -54,8 +54,6 @@ namespace BramrApi.Controllers
                 {
                     Email = model.Email,
                     UserName = model.Email.Split("@")[0],
-                    EmailConfirmed = true,
-                    TwoFactorEnabled = false
                 };
 
                 // Create a user with function
