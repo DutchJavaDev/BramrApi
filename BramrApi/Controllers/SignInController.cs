@@ -51,9 +51,9 @@ namespace BramrApi.Controllers
                 if (result.Succeeded)
                 {
                     // TODO add roles when we diceide to use them
-                    var jwt = IdentityConfig.GenerateJWT(user, userRoles: null);
+                    var token = IdentityConfig.GenerateJWT(user, userRoles: null);
 
-                    return ApiResponse.Oke("Sucess", data: new { user.Id, jwt });
+                    return ApiResponse.Oke("Sucess", data: token );
                 }
                 else
                 {
