@@ -1,6 +1,3 @@
-﻿using BramrApi.Database.Data;
-using FluentNHibernate.Mapping;
-
-namespace BramrApi.Database
+﻿namespace BramrApi.Database
 {
 }
