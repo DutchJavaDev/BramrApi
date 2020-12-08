@@ -10,10 +10,11 @@ namespace BramrApi.Service
 #if DEBUG
         private readonly string WEBSITES_DIRECTORY = @$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\websites\";
 #else
-        private readonly string WEBSITES_DIRECTORY = @$"\var\www\";
+        private readonly string WEBSITES_DIRECTORY = @"\var\www\";
 #endif
 
         private readonly string INDEX_DIRECTORY = "html";
+        private readonly string IMAGES_DIRECTORY = "images";
 
         public CommandService()
         {
@@ -30,8 +31,9 @@ namespace BramrApi.Service
                 var directory = Directory.CreateDirectory(Path.Combine(WEBSITES_DIRECTORY, dir));
                 
                 var indexDirectory = directory.CreateSubdirectory(INDEX_DIRECTORY);
+                var imageDirectory = indexDirectory.CreateSubdirectory(IMAGES_DIRECTORY);
 
-                return directory.Exists && indexDirectory.Exists;
+                return directory.Exists && indexDirectory.Exists && imageDirectory.Exists;
             }
             catch (Exception)
             {

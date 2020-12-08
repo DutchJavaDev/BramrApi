@@ -17,14 +17,5 @@ namespace BramrApi.Controllers
         {
             this.database = database;
         }
-
-
-        [HttpPost("db")]
-        public async Task<ApiResponse> DbTest([FromForm] Auto auto)
-        {
-            await database.AddModel(auto);
-
-            return ApiResponse.Oke(data: database.GetAllModels<Auto>());
-        }
     }
 }

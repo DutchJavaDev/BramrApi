@@ -11,6 +11,10 @@ using Microsoft.Extensions.Hosting;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using BramrApi.Service.Interfaces;
 using BramrApi.Service;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using BramrApi.Utils;
 
 namespace BramrApi
 {
@@ -52,17 +56,37 @@ namespace BramrApi
                 }));
 
             /// Default identity user
-            services.AddIdentityCore<IdentityUser>(options => {
+            services.AddIdentity<IdentityUser, IdentityRole>(options => {
 
                 /// Paswword must be atleast 8 characters long
                 /// must contain a digit, uppercase and 1 special character
-                options.SignIn.RequireConfirmedAccount = true;
                 options.Password.RequiredLength = 8;
                 options.Password.RequireDigit = true;
                 options.Password.RequireUppercase = true;
                 options.Password.RequiredUniqueChars = 1;
                 options.Password.RequireLowercase = true;
-            }).AddEntityFrameworkStores<ApplicationDbContext>();
+
+            }).AddEntityFrameworkStores<ApplicationDbContext>()
+               .AddDefaultTokenProviders();
+
+            /// JWT setup
+            services.AddAuthentication(x => {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x => {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JwtKey"])),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
+            /// JWT / identity config
+            IdentityConfig.Init(Configuration);
 
             services.AddControllers(); 
 
@@ -70,6 +94,7 @@ namespace BramrApi
             services.AddScoped<IServerBlockWriterService, ServerBlockWriterService>();
             services.AddScoped<ICommandService, CommandService>();
             services.AddSingleton<IDatabase, DatabaseService>();
+            services.AddScoped<ISMTP, SMTPMailService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -86,6 +111,8 @@ namespace BramrApi
 
             app.UseRouting();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -98,14 +125,22 @@ namespace BramrApi
 
         private async Task Init(IServiceProvider serviceProvider)
         {
-            //serviceProvider.GetRequiredService<IDatabase>().SetConnectionString(BramrConnectionString);
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
+            // Create roles that are missing 
+            foreach (var role in IdentityConfig.ApiRoles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
 #if DEBUG
             var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
             if (await userManager.FindByEmailAsync("admin@bramr.tech") == null)
             {
-                await userManager.CreateAsync(new IdentityUser
+                var result = await userManager.CreateAsync(new IdentityUser
                 {
                     Email = "admin@bramr.tech",
                     UserName = "Admin"
