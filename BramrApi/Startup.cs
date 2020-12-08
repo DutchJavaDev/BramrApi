@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BramrApi.Utils;
+using Microsoft.AspNetCore.HttpOverrides;
+using System.Net;
 
 namespace BramrApi
 {
@@ -40,6 +42,12 @@ namespace BramrApi
             IdentityConnectionString = Configuration.GetConnectionString("LiveIdentityConnection");
             BramrConnectionString = Configuration.GetConnectionString("LiveDatabaseConnection");
 #endif
+
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.KnownProxies.Add(IPAddress.Parse("10.0.0.100"));
+            });
+
             /// Allow cors
             services.AddCors(options => {
                 options.AddPolicy("CorsPolicy",
@@ -110,6 +118,11 @@ namespace BramrApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
             app.UseAuthentication();
 

@@ -17,5 +17,8 @@ namespace BramrApi.Controllers
         {
             this.database = database;
         }
+
+        [HttpGet]
+        public string Index() => "Hello Api :)";
     }
 }
