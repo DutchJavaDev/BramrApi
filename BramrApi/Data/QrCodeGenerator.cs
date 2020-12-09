@@ -16,14 +16,21 @@ namespace BramrApi.Data
         {
             Url generator = new Url(url);
             string payload = generator.ToString();
-            QRCodeGenerator qrg = new QRCodeGenerator();
-            QRCodeData qRCodeData = qrg.CreateQrCode(payload, QRCodeGenerator.ECCLevel.Q);
-            QRCode qrCode = new QRCode(qRCodeData);
-            var bitmap = qrCode.GetGraphic(5);
-            bitmap.Save(@"C:\Users\mathi\Desktop\qrCode.jpeg", ImageFormat.Jpeg);
+            using (QRCodeGenerator qrg = new QRCodeGenerator())
+            using (QRCodeData qRCodeData = qrg.CreateQrCode(payload, QRCodeGenerator.ECCLevel.Q))
+            using (QRCode qrCode = new QRCode(qRCodeData))
+            using (var bitmap = qrCode.GetGraphic(5))
+            {
+                if (!Directory.Exists(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\"))
+                {
+                    Directory.CreateDirectory(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\");
+                }
+
+                bitmap.Save($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\qrCode.jpeg", ImageFormat.Jpeg);
+            }
             //var image = BitMapToBytes(bitmap);
             //var base64 = Convert.ToBase64String(image);
-            //eturn base64;
+            //return base64;
         }
         //private static byte[] BitMapToBytes(Bitmap bitmap)
         //{
