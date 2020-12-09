@@ -62,7 +62,7 @@ namespace BramrApi.Controllers
                     UserName = model.Email.Split("@")[0],
                 };
 
-                // Gen password?
+                // Gen password?    
                  var password = GenerateRandomPassword();
 
                 // Create a user with function
