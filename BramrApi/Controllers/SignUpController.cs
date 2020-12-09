@@ -70,8 +70,12 @@ namespace BramrApi.Controllers
 
                 if (result.Succeeded)
                 {
+                    QrCodeGenerator qrGen = new QrCodeGenerator();
                     // TODO mail password?, ask group
+                    qrGen.CreateQR("Tempurl.temp/tempdir"); //temp url, has to link to bramr.tech/{user} later ~Mathijs
                     await mailClient.SendPasswordEmail(model.Email,password);
+
+
 
                     //👋
                     return ApiResponse.Oke("Account has been created");
