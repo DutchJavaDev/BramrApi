@@ -1,4 +1,5 @@
 ﻿using BramrApi.Data;
+using BramrApi.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -15,30 +16,36 @@ namespace BramrApi.Controllers
     [ApiController]
     public class ImageController : ControllerBase
     {
+        private readonly IDatabase Database;
+
         // Provides the APIs for managing user in identity
         private readonly UserManager<IdentityUser> userManager;
 
-        public ImageController(UserManager<IdentityUser> userManager)
+        public ImageController(UserManager<IdentityUser> userManager, IDatabase Database)
         {
             this.userManager = userManager;
+            this.Database = Database;
         }
 
         [HttpPost("upload")]
         [Authorize]
         public async Task<ApiResponse> UploadFile([FromForm] IFormFile Image)
         {
+            FileModel File = new FileModel();
             if (Image != null)
             {
                 var user = await userManager.FindByIdAsync(GetIdentity());
                 if (user != null)
                 {
-                    string path = @$"C:\Users\ruben\OneDrive\Bureaublad\{user.UserName}";
+                    string path = @$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\Bramr\{user.UserName}";
                     if (!Directory.Exists(path))
                     {
                         Directory.CreateDirectory(path);
                     }
-                    using Stream FileStream = new FileStream(Path.Combine(path, "profielfoto.png"), FileMode.Create);
+                    using Stream FileStream = new FileStream(Path.Combine(path, $"{Image.FileName}.png"), FileMode.Create);
                     await Image.CopyToAsync(FileStream);
+                    File = new FileModel() { UserName = user.UserName, FilePath = Path.Combine(path, $"{Image.FileName}.png"), FileName = $"{Image.FileName}", FileUri = await File.CreateUri() };
+                    await Database.AddModel(File);
 
                     return ApiResponse.Oke("File uploaded");
                 }
@@ -49,26 +56,34 @@ namespace BramrApi.Controllers
             return ApiResponse.Error("Can't find file");
         }
 
-        [HttpGet("download")]
-        //[Authorize]
-        public async Task<IActionResult> DownloadFile()
+        [HttpGet("info/{type}")]
+        [Authorize]
+        public async Task<FileModel> GetFileInfo(string type)
         {
-            //var user = await userManager.FindByIdAsync(GetIdentity());
-            //if (user != null)
-            //{
-                string path = @$"C:\Users\ruben\OneDrive\Bureaublad\Admin";
-                if (Directory.Exists(path))
-                {
-                    return File(System.IO.File.ReadAllBytes(Path.Combine(path, "profielfoto.png")), "image/png");
-                }
-            //}
+            var user = await userManager.FindByIdAsync(GetIdentity());
+            //return FileModel connected to user.UserName in database where FileName = type
+        }
+
+        [HttpGet("download/{uri}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> DownloadFile(string uri)
+        {
+            //Get FileModel.FilePath where FileUri = uri
+            string path = @$"C:\Users\ruben\OneDrive\Bureaublad\Admin";
+            if (System.IO.File.Exists(path))
+            {
+                return File(System.IO.File.ReadAllBytes(path), "image/png");
+            }
+
             return NotFound();
         }
 
-        [HttpDelete("delete")]
-        public async Task<ApiResponse> DeleteFile([FromBody] string FileName)
+        [HttpDelete("delete/{uri}")]
+        [Authorize]
+        public async Task<ApiResponse> DeleteFile(string uri)
         {
-            string path = Path.Combine(string.Empty, FileName);
+            //Get FileModel.FilePath where FileUri = uri
+            string path = @$"C:\Users\ruben\OneDrive\Bureaublad\Admin";
             if (System.IO.File.Exists(path))
             {
                 System.IO.File.Delete(path);
