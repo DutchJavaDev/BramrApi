@@ -25,6 +25,13 @@ namespace BramrApi.Service
             SessionFactory = GetSessionFactory();
         }
 
+        public bool UserNameExist(string username)
+        {
+            using ISession session = SessionFactory.OpenSession();
+            using ITransaction transaction = session.BeginTransaction();
+            return session.Query<UserProfile>().Count(i => i.UserName == username) > 0;
+        }
+
         public async Task AddModel<T>(T model) where T : DatabaseModel
         {
             using ISession session = SessionFactory.OpenSession();

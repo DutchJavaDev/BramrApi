@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using BramrApi.Database.Data;
 using BramrApi.Service.Interfaces;
 
 namespace BramrApi.Service
@@ -22,6 +23,23 @@ namespace BramrApi.Service
                 Directory.CreateDirectory(WEBSITES_DIRECTORY);
         }
 
+        public UserProfile CreateUser(string username)
+        {
+            if (!CreateWebsiteDirectory(username))
+            {
+                return null;
+            }
+
+            var websiteDir = Path.Combine(WEBSITES_DIRECTORY, username);
+            var imageDir = Path.Combine(websiteDir, IMAGES_DIRECTORY);
+
+            return new UserProfile {
+                UserName = username,
+                WebsiteDirectory = websiteDir,
+                ImageDirectory = imageDir
+            };
+        }
+
         public bool CreateWebsiteDirectory(string dir)
         {
             if (Directory.Exists(Path.Combine(WEBSITES_DIRECTORY, dir))) return false;
@@ -31,6 +49,11 @@ namespace BramrApi.Service
                 var directory = Directory.CreateDirectory(Path.Combine(WEBSITES_DIRECTORY, dir));
                 
                 var indexDirectory = directory.CreateSubdirectory(INDEX_DIRECTORY);
+
+                var path = Path.Combine(Path.Combine(WEBSITES_DIRECTORY, dir),dir)
+
+                File.WriteAllText(,"");
+
                 var imageDirectory = indexDirectory.CreateSubdirectory(IMAGES_DIRECTORY);
 
                 return directory.Exists && indexDirectory.Exists && imageDirectory.Exists;

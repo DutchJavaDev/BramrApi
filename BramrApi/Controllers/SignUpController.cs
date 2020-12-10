@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System;
 using BramrApi.Service.Interfaces;
 using System.Linq;
+using BramrApi.Database.Data;
 
 namespace BramrApi.Controllers
 {
@@ -16,8 +17,14 @@ namespace BramrApi.Controllers
         // Provides the APIs for managing user in identity
         private readonly UserManager<IdentityUser> UserManager;
 
+        // Db
+        private readonly IDatabase Database;
+
+        // Server
+        private readonly ICommandService CommandService;
+
         // Mail
-        private readonly ISMTP mailClient;
+        private readonly ISMTP MailClient;
 
         // Options for generating a password, might not use this either
         private readonly static PasswordOptions PasswordOptions = new PasswordOptions()
@@ -31,10 +38,12 @@ namespace BramrApi.Controllers
         };
 
         // Constructor
-        public SignUpController(UserManager<IdentityUser> umanager, ISMTP mailClient)
+        public SignUpController(UserManager<IdentityUser> umanager, ISMTP mailClient, IDatabase database, ICommandService commandService)
         {
             UserManager = umanager;
-            this.mailClient = mailClient;
+            MailClient = mailClient;
+            Database = database;
+            CommandService = commandService;
         }
 
         /// <summary>
@@ -55,6 +64,11 @@ namespace BramrApi.Controllers
                     return ApiResponse.Error("This email has already been taken"); 
                 }
 
+                if (Database.UserNameExist(model.UserName))
+                { 
+                    return ApiResponse.Error("Username is allready taken");
+                }
+
                 // Identity user class
                 var user = new IdentityUser
                 {
@@ -70,12 +84,8 @@ namespace BramrApi.Controllers
 
                 if (result.Succeeded)
                 {
-                    QrCodeGenerator qrGen = new QrCodeGenerator();
                     // TODO mail password?, ask group
-                    qrGen.CreateQR("Tempurl.temp/tempdir"); //temp url, has to link to bramr.tech/{user} later ~Mathijs
-                    await mailClient.SendPasswordEmail(model.Email,password);
-
-
+                    // await mailClient.SendPasswordEmail(model.Email,password);
 
                     //👋
                     return ApiResponse.Oke("Account has been created");

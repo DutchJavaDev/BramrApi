@@ -15,6 +15,8 @@ namespace BramrApi.Service.Interfaces
 
         public Task DeleteModelById<T>(int id) where T : DatabaseModel;
 
+        public bool UserNameExist(string username);
+
         public void SetConnectionString(string connection);
 
         public T GetModelById<T>(int id) where T : DatabaseModel;

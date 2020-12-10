@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using BramrApi.Database.Data;
+using System.Threading.Tasks;
 
 namespace BramrApi.Service.Interfaces
 {
@@ -7,6 +8,8 @@ namespace BramrApi.Service.Interfaces
         bool CreateWebsiteDirectory(string name);
 
         void DeleteWebsiteDirectory(string name);
+
+        UserProfile CreateUser(string username);
 
         Task<bool> TestNginxConfiguration();
 
