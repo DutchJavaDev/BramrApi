@@ -150,6 +150,8 @@ namespace BramrApi
             }
 #if DEBUG
             var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var db = serviceProvider.GetRequiredService<IDatabase>();
+            var cmd = serviceProvider.GetRequiredService<ICommandService>();
 
             if (await userManager.FindByEmailAsync("admin@bramr.tech") == null)
             {
@@ -158,6 +160,11 @@ namespace BramrApi
                     Email = "admin@bramr.tech",
                     UserName = "Admin"
                 }, "XtS8tT~w");
+
+                var user = await userManager.FindByEmailAsync("admin@bramr.tech");
+                var profile = cmd.CreateUser("admin");
+                profile.Identity = user.Id;
+                await db.AddModel(profile);
             }
 #endif
         }

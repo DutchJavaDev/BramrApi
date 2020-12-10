@@ -43,10 +43,14 @@ namespace BramrApi.Controllers
                     {
                         Directory.CreateDirectory(path);
                     }
+                    if (System.IO.File.Exists(Path.Combine(path, $"{Image.FileName}.png")))
+                    {
+                        System.IO.File.Delete(Path.Combine(path, $"{Image.FileName}.png"));
+                    }
+                    File = new FileModel() { UserName = user.UserName, FilePath = Path.Combine(path, $"{Image.FileName}.png"), FileName = $"{Image.FileName}", FileUri = File.CreateUri() };
+                    await Database.AddModel(File);
                     using Stream FileStream = new FileStream(Path.Combine(path, $"{Image.FileName}.png"), FileMode.Create);
                     await Image.CopyToAsync(FileStream);
-                    File = new FileModel() { UserName = user.UserName, FilePath = Path.Combine(path, $"{Image.FileName}.png"), FileName = $"{Image.FileName}", FileUri = await File.CreateUri() };
-                    await Database.AddModel(File);
 
                     return ApiResponse.Oke("File uploaded");
                 }
@@ -67,7 +71,7 @@ namespace BramrApi.Controllers
 
         [HttpGet("download/{uri}")]
         [AllowAnonymous]
-        public async Task<IActionResult> DownloadFile(string uri)
+        public IActionResult DownloadFile(string uri)
         {
             string path = Database.GetFileModelByUri(uri).FilePath;
             if (System.IO.File.Exists(path))
@@ -76,22 +80,6 @@ namespace BramrApi.Controllers
             }
 
             return NotFound();
-        }
-
-        [HttpDelete("delete/{uri}")]
-        [Authorize]
-        public async Task<ApiResponse> DeleteFile(string uri)
-        {
-            //Get FileModel.FilePath where FileUri = uri
-            string path = @$"C:\Users\ruben\OneDrive\Bureaublad\Admin";
-            if (System.IO.File.Exists(path))
-            {
-                System.IO.File.Delete(path);
-
-                return ApiResponse.Oke("Succesfully deleted file");
-            }
-
-            return ApiResponse.Error("Can't find file");
         }
 
         [NonAction]

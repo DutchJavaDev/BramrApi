@@ -31,7 +31,8 @@ namespace BramrApi.Service
             }
 
             var websiteDir = Path.Combine(WEBSITES_DIRECTORY, username);
-            var imageDir = Path.Combine(websiteDir, IMAGES_DIRECTORY);
+            var indexDir = Path.Combine(websiteDir, INDEX_DIRECTORY);
+            var imageDir = Path.Combine(indexDir, IMAGES_DIRECTORY);
 
             return new UserProfile {
                 UserName = username,
