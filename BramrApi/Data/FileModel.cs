@@ -20,11 +20,5 @@ namespace BramrApi.Data
 
         [Required]
         public virtual string FileUri { get; set; }
-
-        public virtual string CreateUri()
-        {
-            string Uri = Guid.NewGuid().ToString().Replace("-", "");
-            return Uri;
-        }
     }
 }
