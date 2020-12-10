@@ -5,6 +5,6 @@ namespace BramrApi.Service.Interfaces
 {
     public interface ISMTP
     {
-        Task SendPasswordEmail(string email, string password);
+        Task SendPasswordEmail(string email, string password, string username);
     }
 }

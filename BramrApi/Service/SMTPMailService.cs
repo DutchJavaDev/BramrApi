@@ -11,7 +11,7 @@ namespace BramrApi.Service
     {
         private readonly MailAddress From = new MailAddress("bramrinfo@gmail.com");
 
-        public async Task SendPasswordEmail(string email, string password)
+        public async Task SendPasswordEmail(string email, string password, string username)
         {
             //try
             //{
@@ -60,8 +60,10 @@ namespace BramrApi.Service
             //}
             try
             {
-                MailMessage mailWithImg = GetMailWithImg(email, password);
+                LinkedResource res = new LinkedResource($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\qrCode.jpeg" , new ContentType("image/jpeg"));
+                MailMessage mailWithImg = GetMailWithImg(email, password, username, res);
                 CreateClient().Send(mailWithImg);
+                res.Dispose();
             }
             catch (Exception e)
             {
@@ -80,25 +82,26 @@ namespace BramrApi.Service
                 };
             }
 
-        private MailMessage GetMailWithImg(string email, string password)
+        private MailMessage GetMailWithImg(string email, string password,string username, LinkedResource res)
         {
             MailMessage mail = new MailMessage();
             mail.IsBodyHtml = true;
-            mail.AlternateViews.Add(GetEmbeddedImage($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\qrCode.jpeg", password));
+            mail.AlternateViews.Add(GetEmbeddedImage(password, username,res));
             mail.From = new MailAddress("bramrinfo@gmail.com");
             mail.To.Add(email);
             mail.Subject = "Uw Bramr Account!";
             return mail;
         }
 
-        private AlternateView GetEmbeddedImage(string filePath,string password)
+        private AlternateView GetEmbeddedImage( string password, string username, LinkedResource res)// string filePath
         {
-            LinkedResource res = new LinkedResource(filePath);
+            //LinkedResource res = new LinkedResource(filePath, new ContentType("image/jpeg"));
             res.ContentId = Guid.NewGuid().ToString();
-            string htmlBody = $@"<p>Bedankt voor het aanmaken van uw Bramr account. Uw wachtwoord is:{password} </p>" + @"<img style=''width: 300px; height: 300px;'' src='cid:" + res.ContentId + @"'/>";
+            string htmlBody = $@"<p>Beste {username}, </p><p>Bedankt voor het aanmaken van uw Bramr account. Uw wachtwoord is: <b>{password}</b> </p>" + @"<img style=''width: 300px; height: 300px;'' src='cid:" + res.ContentId + @"'/>";
                 
             AlternateView alternateView = AlternateView.CreateAlternateViewFromString(htmlBody, null, MediaTypeNames.Text.Html);
             alternateView.LinkedResources.Add(res);
+            
             return alternateView;
         }
     }
