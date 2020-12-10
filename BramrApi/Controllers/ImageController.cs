@@ -1,4 +1,5 @@
 ﻿using BramrApi.Data;
+using BramrApi.Service;
 using BramrApi.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -37,7 +38,7 @@ namespace BramrApi.Controllers
                 var user = await userManager.FindByIdAsync(GetIdentity());
                 if (user != null)
                 {
-                    string path = @$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\Bramr\{user.UserName}";
+                    string path = Database.GetModelByUserName(user.UserName).ImageDirectory;
                     if (!Directory.Exists(path))
                     {
                         Directory.CreateDirectory(path);
@@ -61,16 +62,14 @@ namespace BramrApi.Controllers
         public async Task<FileModel> GetFileInfo(string type)
         {
             var user = await userManager.FindByIdAsync(GetIdentity());
-            return null; // TEMPORARY!
-            //return FileModel connected to user.UserName in database where FileName = type
+            return Database.GetFileModel(user.UserName, type);
         }
 
         [HttpGet("download/{uri}")]
         [AllowAnonymous]
         public async Task<IActionResult> DownloadFile(string uri)
         {
-            //Get FileModel.FilePath where FileUri = uri
-            string path = @$"C:\Users\ruben\OneDrive\Bureaublad\Admin";
+            string path = Database.GetFileModelByUri(uri).FilePath;
             if (System.IO.File.Exists(path))
             {
                 return File(System.IO.File.ReadAllBytes(path), "image/png");

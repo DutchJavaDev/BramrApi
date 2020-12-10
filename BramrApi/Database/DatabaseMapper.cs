@@ -10,6 +10,7 @@ namespace BramrApi.Database
         {
             Table("file_table");
             Id(e => e.Id);
+            Map(m => m.CreationDate);
             Map(e => e.UserName);
             Map(e => e.FileName);
             Map(e => e.FilePath);
@@ -22,8 +23,8 @@ namespace BramrApi.Database
         {
             Table("userprofile_table");
             Id(m => m.Id);
-            Map(m => m.Identity);
             Map(m => m.CreationDate);
+            Map(m => m.Identity);
             Map(m => m.UserName);
             Map(m => m.WebsiteDirectory);
             Map(m => m.ImageDirectory);

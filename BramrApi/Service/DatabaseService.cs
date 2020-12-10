@@ -8,6 +8,7 @@ using FluentNHibernate.Cfg.Db;
 using System.Linq;
 using NHibernate;
 using NHibernate.Tool.hbm2ddl;
+using BramrApi.Data;
 
 namespace BramrApi.Service
 {
@@ -69,6 +70,27 @@ namespace BramrApi.Service
             using ISession session = SessionFactory.OpenSession();
             using ITransaction transaction = session.BeginTransaction();
             return session.Query<T>().Where(m => m.Id == id).FirstOrDefault();
+        }
+
+        public UserProfile GetModelByUserName (string username)
+        {
+            using ISession session = SessionFactory.OpenSession();
+            using ITransaction transaction = session.BeginTransaction();
+            return session.Query<UserProfile>().Where(m => m.UserName == username).FirstOrDefault();
+        }
+
+        public FileModel GetFileModel(string username, string filename)
+        {
+            using ISession session = SessionFactory.OpenSession();
+            using ITransaction transaction = session.BeginTransaction();
+            return session.Query<FileModel>().Where(m => m.UserName == username).Where(e => e.FileName == filename).FirstOrDefault();
+        }
+
+        public FileModel GetFileModelByUri(string uri)
+        {
+            using ISession session = SessionFactory.OpenSession();
+            using ITransaction transaction = session.BeginTransaction();
+            return session.Query<FileModel>().Where(m => m.UserName == uri).FirstOrDefault();
         }
 
         public void SetConnectionString(string connection)
