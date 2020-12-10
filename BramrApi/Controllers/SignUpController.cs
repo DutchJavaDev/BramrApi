@@ -90,8 +90,10 @@ namespace BramrApi.Controllers
                     QrCodeGenerator qrGen = new QrCodeGenerator();
                     qrGen.CreateQR("Tempurl.temp/tempdir"); //temp url, has to link to bramr.tech/{user} later ~Mathijs
                     await MailClient.SendPasswordEmail(model.Email,password);
-                    io.File.Delete($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\qrCode.jpeg");
+                    //io.File.Delete($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\qrCode.jpeg");
 
+                    var userprofile = CommandService.CreateUser(user.UserName);
+                    await Database.AddModel(userprofile);
 
                     //👋
                     return ApiResponse.Oke("Account has been created");
