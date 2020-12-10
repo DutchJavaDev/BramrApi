@@ -28,6 +28,8 @@ namespace BramrApi.Service.Interfaces
 
         public FileModel GetFileModelByUri(string uri);
 
+        public Task DeleteModelByPath(string path);
+
         public List<T> GetAllModels<T>() where T : DatabaseModel;
     }
 }

@@ -90,7 +90,15 @@ namespace BramrApi.Service
         {
             using ISession session = SessionFactory.OpenSession();
             using ITransaction transaction = session.BeginTransaction();
-            return session.Query<FileModel>().Where(m => m.UserName == uri).FirstOrDefault();
+            return session.Query<FileModel>().Where(m => m.FileUri == uri).FirstOrDefault();
+        }
+
+        public async Task DeleteModelByPath(string path)
+        {
+            using ISession session = SessionFactory.OpenSession();
+            using ITransaction transaction = session.BeginTransaction();
+            await session.DeleteAsync(session.Query<FileModel>().Where(m => m.FilePath == path).FirstOrDefault());
+            await transaction.CommitAsync();
         }
 
         public void SetConnectionString(string connection)

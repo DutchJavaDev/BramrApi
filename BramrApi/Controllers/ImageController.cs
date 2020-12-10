@@ -46,6 +46,7 @@ namespace BramrApi.Controllers
                     if (System.IO.File.Exists(Path.Combine(path, $"{Image.FileName}.png")))
                     {
                         System.IO.File.Delete(Path.Combine(path, $"{Image.FileName}.png"));
+                        await Database.DeleteModelByPath(Path.Combine(path, $"{Image.FileName}.png"));
                     }
                     File = new FileModel() { UserName = user.UserName, FilePath = Path.Combine(path, $"{Image.FileName}.png"), FileName = $"{Image.FileName}", FileUri = File.CreateUri() };
                     await Database.AddModel(File);
@@ -63,10 +64,10 @@ namespace BramrApi.Controllers
 
         [HttpGet("info/{type}")]
         [Authorize]
-        public async Task<FileModel> GetFileInfo(string type)
+        public async Task<string> GetFileInfo(string type)
         {
             var user = await userManager.FindByIdAsync(GetIdentity());
-            return Database.GetFileModel(user.UserName, type);
+            return Database.GetFileModel(user.UserName, type).FileUri;
         }
 
         [HttpGet("download/{uri}")]
