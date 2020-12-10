@@ -21,7 +21,7 @@ namespace BramrApi.Data
         [Required]
         public virtual string FileUri { get; set; }
 
-        public async Task<string> CreateUri()
+        public virtual async Task<string> CreateUri()
         {
             Random r = new Random();
             string Uri = string.Empty;

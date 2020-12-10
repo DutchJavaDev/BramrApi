@@ -87,8 +87,9 @@ namespace BramrApi.Controllers
                 {
                     // TODO mail password?, ask group
                     // await mailClient.SendPasswordEmail(model.Email,password);
+                    QrCodeGenerator qrGen = new QrCodeGenerator();
                     qrGen.CreateQR("Tempurl.temp/tempdir"); //temp url, has to link to bramr.tech/{user} later ~Mathijs
-                    await mailClient.SendPasswordEmail(model.Email,password);
+                    await MailClient.SendPasswordEmail(model.Email,password);
                     io.File.Delete($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\qrCode.jpeg");
 
 

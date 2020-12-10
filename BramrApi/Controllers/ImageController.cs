@@ -61,6 +61,7 @@ namespace BramrApi.Controllers
         public async Task<FileModel> GetFileInfo(string type)
         {
             var user = await userManager.FindByIdAsync(GetIdentity());
+            return null; // TEMPORARY!
             //return FileModel connected to user.UserName in database where FileName = type
         }
 
