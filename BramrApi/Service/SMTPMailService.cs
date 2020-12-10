@@ -11,69 +11,28 @@ namespace BramrApi.Service
     {
         private readonly MailAddress From = new MailAddress("bramrinfo@gmail.com");
 
-        public async Task SendPasswordEmail(string email, string password, string username)
+        public void SendPasswordEmail(string email, string password, string username)
         {
-            //try
-            //{
-
-            //    using (var client = CreateClient())
-            //    {
-            //        AlternateView view = AlternateView.CreateAlternateViewFromString($"<img src=\"cid:id1\"></img><img src=\"cid:id1\"></img>", null, MediaTypeNames.Text.Html);
-
-            //        LinkedResource resource = new LinkedResource("qrCode.jpeg", MediaTypeNames.Image.Jpeg)
-            //        {   
-            //            ContentId = "id1",
-            //        };
-
-            //        var message = new MailMessage(From, new MailAddress(email))
-            //        {
-
-            //            Subject = "Uw Bramr Account",
-            //            IsBodyHtml = true
-            //        };
-
-            //        message.AlternateViews.Add(view);
-
-            //        Attachment att = new Attachment(@"C:\Users\mathi\Desktop\qrCode.jpeg");
-            //        att.ContentDisposition.Inline = true;
-
-            //        message.Body = String.Format(
-            //"<h3>Client: Has Sent You A Screenshot</h3>" +
-            //@"<img src=""cid:{0}"" />", att.ContentId);
-
-            //        message.IsBodyHtml = true;
-            //        message.Attachments.Add(att);
-
-            //        view.LinkedResources.Add(resource);
-
-            //        await client.SendMailAsync(message);
-
-
-            //    }
-
-
-            //}
-            //catch (System.Exception e)
-            //{
-
-
-            //}
             try
             {
-                LinkedResource res = new LinkedResource($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\qrCode.jpeg" , new ContentType("image/jpeg"));
-                MailMessage mailWithImg = GetMailWithImg(email, password, username, res);
-                CreateClient().Send(mailWithImg);
-                res.Dispose();
+#if DEBUG
+                using (LinkedResource res = new LinkedResource($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\qrCode.jpeg", new ContentType("image/jpeg")))
+#else
+                using (LinkedResource res = new LinkedResource($@"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\{username}.jpeg", new ContentType("image/jpeg")))
+#endif
+                {
+                    MailMessage mailWithImg = GetMailWithImg(email, password, username, res);
+                    CreateClient().Send(mailWithImg);
+                    res.Dispose();
+                }
+                
             }
             catch (Exception e)
             {
-
                 
             }
-            
-
-          
         }
+
         private SmtpClient CreateClient()
             {
                 return new SmtpClient("smtp.gmail.com", 587) {
