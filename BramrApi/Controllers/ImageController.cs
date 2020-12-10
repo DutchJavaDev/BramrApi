@@ -1,14 +1,12 @@
 ﻿using BramrApi.Data;
-using BramrApi.Service;
 using BramrApi.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using BramrApi.Utils;
 using System.Threading.Tasks;
 
 namespace BramrApi.Controllers
@@ -32,24 +30,35 @@ namespace BramrApi.Controllers
         [Authorize]
         public async Task<ApiResponse> UploadFile([FromForm] IFormFile Image)
         {
-            FileModel File = new FileModel();
             if (Image != null)
             {
                 var user = await userManager.FindByIdAsync(GetIdentity());
                 if (user != null)
                 {
                     string path = Database.GetModelByUserName(user.UserName).ImageDirectory;
+
                     if (!Directory.Exists(path))
                     {
                         Directory.CreateDirectory(path);
                     }
-                    if (System.IO.File.Exists(Path.Combine(path, $"{Image.FileName}.png")))
+
+                    var imagePath = Path.Combine(path, $"{Image.FileName}.png");
+
+                    if (System.IO.File.Exists(imagePath))
                     {
-                        System.IO.File.Delete(Path.Combine(path, $"{Image.FileName}.png"));
-                        await Database.DeleteModelByPath(Path.Combine(path, $"{Image.FileName}.png"));
+                        System.IO.File.Delete(imagePath);
+
+                        await Database.DeleteModelByPath(imagePath);
                     }
-                    File = new FileModel() { UserName = user.UserName, FilePath = Path.Combine(path, $"{Image.FileName}.png"), FileName = $"{Image.FileName}", FileUri = File.CreateUri() };
-                    await Database.AddModel(File);
+
+                    await Database.AddModel(new FileModel
+                    {
+                        UserName = user.UserName,
+                        FilePath = Path.Combine(path, $"{Image.FileName}.png"),
+                        FileName = $"{Image.FileName}",
+                        FileUri = Utility.CreateFileUri()
+                    });
+
                     using Stream FileStream = new FileStream(Path.Combine(path, $"{Image.FileName}.png"), FileMode.Create);
                     await Image.CopyToAsync(FileStream);
 
