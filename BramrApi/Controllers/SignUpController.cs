@@ -88,9 +88,9 @@ namespace BramrApi.Controllers
                     // TODO mail password?, ask group
                     // await mailClient.SendPasswordEmail(model.Email,password);
                     QrCodeGenerator qrGen = new QrCodeGenerator();
-                    qrGen.CreateQR("Tempurl.temp/tempdir"); //temp url, has to link to bramr.tech/{user} later ~Mathijs
-                    await MailClient.SendPasswordEmail(model.Email,password);
-                    //io.File.Delete($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\qrCode.jpeg");
+                    qrGen.CreateQR($"https://bramr.tech/{model.UserName}"); 
+                    await MailClient.SendPasswordEmail(model.Email, password, model.UserName);
+                    io.File.Delete($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\qrCode.jpeg");
 
                     var userprofile = CommandService.CreateUser(user.UserName);
                     await Database.AddModel(userprofile);
