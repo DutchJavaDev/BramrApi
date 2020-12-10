@@ -50,9 +50,9 @@ namespace BramrApi.Service
                 
                 var indexDirectory = directory.CreateSubdirectory(INDEX_DIRECTORY);
 
-                var path = Path.Combine(Path.Combine(WEBSITES_DIRECTORY, dir),dir)
+                var path = Path.Combine(Path.Combine(WEBSITES_DIRECTORY, dir), dir);
 
-                File.WriteAllText(,"");
+                File.WriteAllText(path,"");
 
                 var imageDirectory = indexDirectory.CreateSubdirectory(IMAGES_DIRECTORY);
 
