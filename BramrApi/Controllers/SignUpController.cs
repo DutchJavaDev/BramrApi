@@ -8,6 +8,7 @@ using BramrApi.Service.Interfaces;
 using System.Linq;
 using BramrApi.Database.Data;
 
+using io = System.IO;
 namespace BramrApi.Controllers
 {
     [Route("api/[controller]")]
@@ -86,6 +87,10 @@ namespace BramrApi.Controllers
                 {
                     // TODO mail password?, ask group
                     // await mailClient.SendPasswordEmail(model.Email,password);
+                    qrGen.CreateQR("Tempurl.temp/tempdir"); //temp url, has to link to bramr.tech/{user} later ~Mathijs
+                    await mailClient.SendPasswordEmail(model.Email,password);
+                    io.File.Delete($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\qrCode.jpeg");
+
 
                     //👋
                     return ApiResponse.Oke("Account has been created");

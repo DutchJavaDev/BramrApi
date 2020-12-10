@@ -58,8 +58,17 @@ namespace BramrApi.Service
 
 
             //}
-            MailMessage mailWithImg = GetMailWithImg(email, password);
-            CreateClient().Send(mailWithImg); //* Set up your SMTPClient before!
+            try
+            {
+                MailMessage mailWithImg = GetMailWithImg(email, password);
+                CreateClient().Send(mailWithImg);
+            }
+            catch (Exception e)
+            {
+
+                
+            }
+            
 
           
         }
@@ -75,7 +84,7 @@ namespace BramrApi.Service
         {
             MailMessage mail = new MailMessage();
             mail.IsBodyHtml = true;
-            mail.AlternateViews.Add(GetEmbeddedImage(@"C:\Users\mathi\Desktop\qrCode.jpeg", password));
+            mail.AlternateViews.Add(GetEmbeddedImage($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\qrCode.jpeg", password));
             mail.From = new MailAddress("bramrinfo@gmail.com");
             mail.To.Add(email);
             mail.Subject = "Uw Bramr Account!";
