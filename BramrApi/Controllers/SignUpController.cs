@@ -46,7 +46,7 @@ namespace BramrApi.Controllers
             Database = database;
             CommandService = commandService;
         }
-
+        
         /// <summary>
         /// Function/Endpoint in this controller for creating a new user with identitty
         /// </summary>
@@ -70,6 +70,8 @@ namespace BramrApi.Controllers
                     return ApiResponse.Error("Username is allready taken");
                 }
 
+                model.UserName = model.UserName.Trim();
+
                 // Identity user class
                 var user = new IdentityUser
                 {
@@ -88,9 +90,13 @@ namespace BramrApi.Controllers
                     // TODO mail password?, ask group
                     // await mailClient.SendPasswordEmail(model.Email,password);
                     QrCodeGenerator qrGen = new QrCodeGenerator();
-                    qrGen.CreateQR($"https://bramr.tech/{model.UserName}"); 
-                    await MailClient.SendPasswordEmail(model.Email, password, model.UserName);
-                    io.File.Delete($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\qrCode.jpeg");
+                    qrGen.CreateQR($"https://bramr.tech/{model.UserName}", model.UserName); 
+                    MailClient.SendPasswordEmail(model.Email, password, model.UserName);
+#if DEBUG
+                    io.File.Delete($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\{model.UserName}.jpeg");
+#else
+                    io.File.Delete(@$"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\{model.UserName}.jpeg");
+#endif
 
                     var userprofile = CommandService.CreateUser(user.UserName);
                     await Database.AddModel(userprofile);
