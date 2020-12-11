@@ -82,7 +82,7 @@ namespace BramrApi.Controllers
                 var user = new IdentityUser
                 {
                     Email = model.Email,
-                    UserName = model.Email.Split("@")[0],
+                    UserName = model.UserName,
                 };
 
                 // Gen password?    
