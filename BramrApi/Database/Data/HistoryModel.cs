@@ -8,19 +8,18 @@ namespace BramrApi.Database.Data
 {
     public class HistoryModel : DatabaseModel
     {
-        [Required]
-        public string UserName { get; set; }
+        public virtual string UserName { get; set; }
 
         [Required]
-        public int Location { get; set; }
+        public virtual int Location { get; set; }
 
         [Required]
-        public int DesignElement { get; set; }
+        public virtual int DesignElement { get; set; }
 
         [Required]
-        public string EditType { get; set; }
+        public virtual string EditType { get; set; }
 
         [Required]
-        public string Edit { get; set; }
+        public virtual string Edit { get; set; }
     }
 }
