@@ -107,6 +107,29 @@ namespace BramrApi.Service
             await transaction.CommitAsync();
         }
 
+        public HistoryModel GetHistoryModel(string username, int location)
+        {
+            using ISession session = SessionFactory.OpenSession();
+            using ITransaction transaction = session.BeginTransaction();
+            return session.Query<HistoryModel>().Where(m => m.UserName == username).Where(e => e.Location == location).FirstOrDefault();
+        }
+
+        public async Task DeleteAllHistoryModelsByUsername(string username)
+        {
+            using ISession session = SessionFactory.OpenSession();
+            using ITransaction transaction = session.BeginTransaction();
+            await session.DeleteAsync(session.Query<HistoryModel>().Where(m => m.UserName == username).FirstOrDefault());
+            await transaction.CommitAsync();
+        }
+
+        public async Task DeleteAllHistoryModelsFromLocationByUsername(string username, int location)
+        {
+            using ISession session = SessionFactory.OpenSession();
+            using ITransaction transaction = session.BeginTransaction();
+            await session.DeleteAsync(session.Query<HistoryModel>().Where(m => m.UserName == username).Where(e => e.Location >= location).FirstOrDefault());
+            await transaction.CommitAsync();
+        }
+
         public void SetConnectionString(string connection)
         {
             ConnectionString = connection;

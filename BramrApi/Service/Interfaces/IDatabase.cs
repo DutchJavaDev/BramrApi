@@ -32,6 +32,12 @@ namespace BramrApi.Service.Interfaces
 
         public Task DeleteFileModelByPath(string path);
 
+        public HistoryModel GetHistoryModel(string username, int location);
+
+        public Task DeleteAllHistoryModelsByUsername(string username);
+
+        public Task DeleteAllHistoryModelsFromLocationByUsername(string username, int location);
+
         public List<T> GetAllModels<T>() where T : DatabaseModel;
     }
 }
