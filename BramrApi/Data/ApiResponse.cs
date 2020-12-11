@@ -11,18 +11,29 @@ namespace BramrApi.Data
 
         public string Message { get; private set; } = string.Empty;
 
-        public object RequestedData { get; private set; } = string.Empty;
+        public Dictionary<string,object> RequestedData { get; private set; } = new Dictionary<string, object>();
 
         public ICollection<string> Errors { get; private set; } = new List<string>();
 
-        public static ApiResponse Oke(string message = "", object data = null)
+        public ApiResponse AddData(string key, object value)
         {
-            return new ApiResponse { Success = true, Message = message, RequestedData = data };
+            RequestedData.Add(key, value);
+            return this;
         }
 
-        public static ApiResponse Error(string message = "", object data = null, ICollection<string> errors = null)
+        public T GetData<T>(string key)
         {
-            return new ApiResponse { Success = false, Message = message, RequestedData = data, Errors = errors };
+            return (T) RequestedData[key] ?? default;
+        }
+
+        public static ApiResponse Oke(string message = "")
+        {
+            return new ApiResponse { Success = true, Message = message};
+        }
+
+        public static ApiResponse Error(string message = "", ICollection<string> errors = null)
+        {
+            return new ApiResponse { Success = false, Message = message, Errors = errors };
         }
         public override string ToString()
         {

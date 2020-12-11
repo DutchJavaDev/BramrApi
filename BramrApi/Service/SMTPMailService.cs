@@ -9,8 +9,6 @@ namespace BramrApi.Service
 {
     public class SMTPMailService : ISMTP
     {
-        private readonly MailAddress From = new MailAddress("bramrinfo@gmail.com");
-
         public void SendPasswordEmail(string email, string password, string username)
         {
             try
@@ -27,9 +25,9 @@ namespace BramrApi.Service
                 }
                 
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                
+               
             }
         }
 

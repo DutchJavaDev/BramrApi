@@ -5,6 +5,8 @@ using BramrApi.Data;
 using BramrApi.Utils;
 using Microsoft.AspNetCore.Authorization;
 using BramrApi.Service.Interfaces;
+using BramrApi.Database.Data;
+using System.Linq;
 
 namespace BramrApi.Controllers
 {
@@ -19,13 +21,25 @@ namespace BramrApi.Controllers
         // Provides the APIs for managing user logins identity
         private readonly SignInManager<IdentityUser> signInManager;
 
-        private readonly ISMTP mailClient;
+        private readonly IDatabase database;
 
-        public SignInController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ISMTP mailClient)
+        public SignInController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IDatabase database)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
-            this.mailClient = mailClient;
+            this.database = database;
+        }
+
+        [HttpGet("verify/jwt")]
+        [Authorize]
+        public async Task<IActionResult> JWTValidation()
+        {
+            var user = await userManager.FindByIdAsync(GetIdentity());
+
+            if (user == null)
+                return NotFound();
+
+            return Ok();
         }
 
         /// <summary>
@@ -53,16 +67,27 @@ namespace BramrApi.Controllers
                     // TODO add roles when we diceide to use them
                     var token = IdentityConfig.GenerateJWT(user, userRoles: null);
 
-                    return ApiResponse.Oke("Sucess", data: token );
+                    // get profile
+                    var profile = database.GetModelByIdentity<UserProfile>(user.Id);
+
+
+                    return ApiResponse.Oke("Sucess")
+                            .AddData("jwt_token", token)
+                            .AddData("username", profile.UserName);
                 }
                 else
                 {
-                    return ApiResponse.Error("Failed to login", data: new { result });
+                    return ApiResponse.Error("Failed to login");
                 }
             }
 
             return ApiResponse.Error("Not all required fields have been filled in");
         }
 
+        [NonAction]
+        private string GetIdentity()
+        {
+            return User.Claims.Where(i => i.Type.Contains("claims/nameidentifier")).FirstOrDefault().Value;
+        }
     }
 }

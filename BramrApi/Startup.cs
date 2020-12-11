@@ -166,6 +166,7 @@ namespace BramrApi
                 profile.Identity = user.Id;
                 await db.AddModel(profile);
             }
+           
 #endif
         }
     }

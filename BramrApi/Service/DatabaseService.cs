@@ -50,6 +50,12 @@ namespace BramrApi.Service
             await transaction.CommitAsync();
         }
 
+        public T GetModelByIdentity<T>(string identity) where T : DatabaseModel
+        {
+            using ISession session = SessionFactory.OpenSession();
+            using ITransaction transaction = session.BeginTransaction();
+            return session.Query<T>().Where(m => m.Identity == identity).FirstOrDefault();
+        }
         public async Task DeleteModelById<T>(int id) where T : DatabaseModel
         {
             using ISession session = SessionFactory.OpenSession();

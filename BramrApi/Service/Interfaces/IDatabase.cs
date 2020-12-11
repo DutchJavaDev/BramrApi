@@ -24,6 +24,8 @@ namespace BramrApi.Service.Interfaces
 
         public UserProfile GetModelByUserName(string username);
 
+        public T GetModelByIdentity<T>(string identity) where T : DatabaseModel;
+
         public FileModel GetFileModel(string username, string filename);
 
         public FileModel GetFileModelByUri(string uri);
