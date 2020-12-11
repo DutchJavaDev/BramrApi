@@ -48,7 +48,7 @@ namespace BramrApi.Controllers
                     {
                         System.IO.File.Delete(imagePath);
 
-                        await Database.DeleteModelByPath(imagePath);
+                        await Database.DeleteFileModelByPath(imagePath);
                     }
 
                     await Database.AddModel(new FileModel

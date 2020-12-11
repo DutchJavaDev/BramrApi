@@ -93,7 +93,7 @@ namespace BramrApi.Service
             return session.Query<FileModel>().Where(m => m.FileUri == uri).FirstOrDefault();
         }
 
-        public async Task DeleteModelByPath(string path)
+        public async Task DeleteFileModelByPath(string path)
         {
             using ISession session = SessionFactory.OpenSession();
             using ITransaction transaction = session.BeginTransaction();
