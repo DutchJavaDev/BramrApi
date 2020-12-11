@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System;
 using BramrApi.Service.Interfaces;
 using System.Linq;
-using BramrApi.Database.Data;
 
 using io = System.IO;
 namespace BramrApi.Controllers
@@ -46,7 +45,14 @@ namespace BramrApi.Controllers
             Database = database;
             CommandService = commandService;
         }
-        
+
+        [HttpGet("username/exists/{name}")]
+        public ApiResponse UsernameExists(string name)
+        {
+            var Exists = Database.UserNameExist(name);
+            return ApiResponse.Oke(data: Exists);
+        }
+
         /// <summary>
         /// Function/Endpoint in this controller for creating a new user with identitty
         /// </summary>
@@ -90,15 +96,21 @@ namespace BramrApi.Controllers
                     // TODO mail password?, ask group
                     // await mailClient.SendPasswordEmail(model.Email,password);
                     QrCodeGenerator qrGen = new QrCodeGenerator();
-                    qrGen.CreateQR($"https://bramr.tech/{model.UserName}", model.UserName); 
+                    
+                    qrGen.CreateQR($"https://bramr.tech/{model.UserName}", model.UserName);
+                    
                     MailClient.SendPasswordEmail(model.Email, password, model.UserName);
 #if DEBUG
                     io.File.Delete($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\{model.UserName}.jpeg");
 #else
                     io.File.Delete(@$"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\{model.UserName}.jpeg");
 #endif
+                    user = await UserManager.FindByEmailAsync(model.Email);
 
                     var userprofile = CommandService.CreateUser(user.UserName);
+
+                    userprofile.Identity = user.Id;
+
                     await Database.AddModel(userprofile);
 
                     //👋
