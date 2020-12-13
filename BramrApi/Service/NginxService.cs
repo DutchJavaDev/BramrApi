@@ -21,6 +21,9 @@ namespace BramrApi.Service
 
         public NginxService()
         {
+#if !DEBUG
+            Directory.SetCurrentDirectory("/");
+#endif
             if (!Directory.Exists(WEBSITES_DIRECTORY))
                 Directory.CreateDirectory(WEBSITES_DIRECTORY);
         }
