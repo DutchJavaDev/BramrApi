@@ -30,7 +30,8 @@ namespace BramrApi.Controllers
             return ApiResponse.Oke()
                    .AddData("block exist", await ServerBlockWriter.BlockExists("boris"))
                    .AddData("nginx config result", await CommandService.TestNginxConfiguration())
-                   .AddData("nginx reload result", await CommandService.ReloadNginx());
+                   .AddData("nginx reload result", await CommandService.ReloadNginx())
+                   .AddData("Lol","yep");
         }
     }
 }
