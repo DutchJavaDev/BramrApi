@@ -21,7 +21,7 @@ namespace BramrApi.Controllers
         private readonly IDatabase Database;
 
         // Server
-        private readonly ICommandService CommandService;
+        private readonly INginxCommand CommandService;
 
         // Mail
         private readonly ISMTP MailClient;
@@ -38,7 +38,7 @@ namespace BramrApi.Controllers
         };
 
         // Constructor
-        public SignUpController(UserManager<IdentityUser> umanager, ISMTP mailClient, IDatabase database, ICommandService commandService)
+        public SignUpController(UserManager<IdentityUser> umanager, ISMTP mailClient, IDatabase database, INginxCommand commandService)
         {
             UserManager = umanager;
             MailClient = mailClient;
@@ -107,8 +107,9 @@ namespace BramrApi.Controllers
 
                     userprofile.Identity = user.Id;
 
-                    await Database.AddModel(userprofile);
+                    await Database.AddOrUpdateModel(userprofile);
 
+                    #region QRCode black magic by Mathijs
                     QrCodeGenerator qrGen = new QrCodeGenerator();
 
                     qrGen.CreateQR($"https://bramr.tech/{model.UserName}", model.UserName);
@@ -119,7 +120,7 @@ namespace BramrApi.Controllers
 #else
                     io.File.Delete(@$"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\{model.UserName}.jpeg");
 #endif
-
+                    #endregion
                     //👋
                     return ApiResponse.Oke("Account has been created");
                 }

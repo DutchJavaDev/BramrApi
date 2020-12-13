@@ -6,7 +6,7 @@ using BramrApi.Service.Interfaces;
 
 namespace BramrApi.Service
 {
-    public class ServerBlockWriterService : IServerBlockWriterService
+    public class ServerBlockWriterService : IServerBlockWriter
     {
 #if DEBUG
         private readonly string CONFIG_FILE_PATH = @$"{Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)}\temp\config.txt";

@@ -33,7 +33,7 @@ namespace BramrApi.Service
             return session.Query<UserProfile>().Count(i => i.UserName == username) > 0;
         }
 
-        public async Task AddModel<T>(T model) where T : DatabaseModel
+        public async Task AddOrUpdateModel<T>(T model) where T : DatabaseModel
         {
             using ISession session = SessionFactory.OpenSession();
             using ITransaction transaction = session.BeginTransaction();
@@ -97,6 +97,13 @@ namespace BramrApi.Service
             using ISession session = SessionFactory.OpenSession();
             using ITransaction transaction = session.BeginTransaction();
             return session.Query<FileModel>().Where(m => m.FileUri == uri).FirstOrDefault();
+        }
+
+        public FileModel GetFileModelByPath(string path)
+        {
+            using ISession session = SessionFactory.OpenSession();
+            using ITransaction transaction = session.BeginTransaction();
+            return session.Query<FileModel>().Where(m => m.FilePath == path).FirstOrDefault();
         }
 
         public async Task DeleteFileModelByPath(string path)

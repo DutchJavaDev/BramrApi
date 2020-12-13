@@ -99,8 +99,8 @@ namespace BramrApi
             services.AddControllers(); 
 
             /// Services
-            services.AddScoped<IServerBlockWriterService, ServerBlockWriterService>();
-            services.AddScoped<ICommandService, CommandService>();
+            services.AddScoped<IServerBlockWriter, ServerBlockWriterService>();
+            services.AddScoped<INginxCommand, NginxService>();
             services.AddSingleton<IDatabase, DatabaseService>();
             services.AddScoped<ISMTP, SMTPMailService>();
         }
@@ -151,7 +151,7 @@ namespace BramrApi
 #if DEBUG
             var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
             var db = serviceProvider.GetRequiredService<IDatabase>();
-            var cmd = serviceProvider.GetRequiredService<ICommandService>();
+            var cmd = serviceProvider.GetRequiredService<INginxCommand>();
 
             if (await userManager.FindByEmailAsync("admin@bramr.tech") == null)
             {
@@ -164,7 +164,7 @@ namespace BramrApi
                 var user = await userManager.FindByEmailAsync("admin@bramr.tech");
                 var profile = cmd.CreateUser("admin");
                 profile.Identity = user.Id;
-                await db.AddModel(profile);
+                await db.AddOrUpdateModel(profile);
             }
            
 #endif

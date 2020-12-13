@@ -8,7 +8,7 @@ namespace BramrApi.Service.Interfaces
 {
     public interface IDatabase
     {
-        public Task AddModel<T>(T model) where T : DatabaseModel;
+        public Task AddOrUpdateModel<T>(T model) where T : DatabaseModel;
 
         public Task UpdateModel<T>(T model) where T : DatabaseModel;
 
@@ -29,7 +29,7 @@ namespace BramrApi.Service.Interfaces
         public FileModel GetFileModel(string username, string filename);
 
         public FileModel GetFileModelByUri(string uri);
-
+        public FileModel GetFileModelByPath(string path);
         public Task DeleteFileModelByPath(string path);
 
         public HistoryModel GetHistoryModel(string username, int location);
