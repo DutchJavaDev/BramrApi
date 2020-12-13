@@ -47,7 +47,7 @@ namespace BramrApi.Controllers
                 return ApiResponse.Error("User not found!");
             }
 
-            await Database.AddModel(new HistoryModel
+            await Database.AddOrUpdateModel(new HistoryModel
             {
                 UserName = user.UserName,
                 Location = CurrentEdit.Location,
