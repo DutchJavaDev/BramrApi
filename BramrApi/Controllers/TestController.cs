@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using BramrApi.Database.Data;
 using Microsoft.AspNetCore.Mvc;
+using io = System.IO;
 
 namespace BramrApi.Controllers
 {
@@ -25,13 +26,19 @@ namespace BramrApi.Controllers
         [HttpGet]
         public async Task<ApiResponse> Index()
         {
-            ServerBlockWriter.CreateServerBlock("boris", "bmulder");
+            //ServerBlockWriter.CreateServerBlock("boris", "bmulder");
+
+            //return ApiResponse.Oke()
+            //       .AddData("block exist", await ServerBlockWriter.BlockExists("boris"))
+            //       .AddData("nginx config result", await CommandService.TestNginxConfiguration())
+            //       .AddData("nginx reload result", await CommandService.ReloadNginx())
+            //       .AddData("Lol","yep");
 
             return ApiResponse.Oke()
-                   .AddData("block exist", await ServerBlockWriter.BlockExists("boris"))
-                   .AddData("nginx config result", await CommandService.TestNginxConfiguration())
-                   .AddData("nginx reload result", await CommandService.ReloadNginx())
-                   .AddData("Lol","yep");
+                    .AddData("",io.Directory.Exists(@"var\www"))
+                    .AddData("", io.Directory.Exists(@"\var\www"))
+                    .AddData("", io.Directory.Exists(@"var/www"))
+                    .AddData("", io.Directory.Exists(@"/var/www"));
         }
     }
 }
