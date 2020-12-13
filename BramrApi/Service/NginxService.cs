@@ -13,7 +13,7 @@ namespace BramrApi.Service
 #if DEBUG
         private readonly string WEBSITES_DIRECTORY = @$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\websites\";
 #else
-        private readonly string WEBSITES_DIRECTORY = @"\var\www\";
+        private readonly string WEBSITES_DIRECTORY = @"var\www\";
 #endif
 
         private readonly string INDEX_DIRECTORY = "html";
@@ -22,7 +22,7 @@ namespace BramrApi.Service
         public NginxService()
         {
 #if !DEBUG
-            Directory.SetCurrentDirectory("");
+            Directory.SetCurrentDirectory($"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}");
 #endif
             if (!Directory.Exists(WEBSITES_DIRECTORY))
                 Directory.CreateDirectory(WEBSITES_DIRECTORY);

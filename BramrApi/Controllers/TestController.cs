@@ -33,12 +33,9 @@ namespace BramrApi.Controllers
             //       .AddData("nginx config result", await CommandService.TestNginxConfiguration())
             //       .AddData("nginx reload result", await CommandService.ReloadNginx())
             //       .AddData("Lol","yep");
-
+            await Task.Delay(1);
             return ApiResponse.Oke()
-                    .AddData("",io.Directory.Exists(@"var\www"))
-                    .AddData("", io.Directory.Exists(@"\var\www"))
-                    .AddData("", io.Directory.Exists(@"var/www"))
-                    .AddData("", io.Directory.Exists(@"/var/www"));
+                    .AddData("dir",io.Directory.GetCurrentDirectory());
         }
     }
 }
