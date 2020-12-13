@@ -48,16 +48,29 @@ namespace BramrApi.Controllers
                     {
                         System.IO.File.Delete(imagePath);
 
-                        await Database.DeleteFileModelByPath(imagePath);
+                        // You can also update the filemodel so that you wont need to delete and create a new one 
+                        //await Database.DeleteFileModelByPath(imagePath);
+                        var model = Database.GetFileModelByPath(imagePath);
+
+                        model.Identity = user.Id;
+                        model.FilePath = Path.Combine(path, $"{Image.FileName}.png");
+                        model.FileName = $"{Image.FileName}";
+                        model.FileUri = Utility.CreateFileUri();
+
+                        // AddModel can also update an existing model
+                        await Database.AddOrUpdateModel(model);
+                    }
+                    else
+                    {
+                        await Database.AddOrUpdateModel(new FileModel
+                        {
+                            UserName = user.UserName,
+                            FilePath = Path.Combine(path, $"{Image.FileName}.png"),
+                            FileName = $"{Image.FileName}",
+                            FileUri = Utility.CreateFileUri(),
+                        });
                     }
 
-                    await Database.AddModel(new FileModel
-                    {
-                        UserName = user.UserName,
-                        FilePath = Path.Combine(path, $"{Image.FileName}.png"),
-                        FileName = $"{Image.FileName}",
-                        FileUri = Utility.CreateFileUri()
-                    });
 
                     using Stream FileStream = new FileStream(Path.Combine(path, $"{Image.FileName}.png"), FileMode.Create);
                     await Image.CopyToAsync(FileStream);
@@ -83,11 +96,12 @@ namespace BramrApi.Controllers
         [AllowAnonymous]
         public IActionResult DownloadFile(string uri)
         {
-            string path = Database.GetFileModelByUri(uri).FilePath;
-            if (System.IO.File.Exists(path))
-            {
-                return File(System.IO.File.ReadAllBytes(path), "image/png");
-            }
+            var file = Database.GetFileModelByUri(uri);
+
+            if (file == null) return NotFound();
+
+            if (System.IO.File.Exists(file.FilePath))
+                return File(System.IO.File.ReadAllBytes(file.FilePath), $"image/png");
 
             return NotFound();
         }
