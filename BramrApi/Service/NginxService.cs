@@ -24,8 +24,8 @@ namespace BramrApi.Service
 #if !DEBUG
             Directory.SetCurrentDirectory($"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}");
 #endif
-            if (!Directory.Exists(WEBSITES_DIRECTORY))
-                Directory.CreateDirectory(WEBSITES_DIRECTORY);
+            //if (!Directory.Exists(WEBSITES_DIRECTORY))
+            //    Directory.CreateDirectory(WEBSITES_DIRECTORY);
         }
 
         public UserProfile CreateUser(string username)

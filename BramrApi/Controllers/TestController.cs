@@ -35,7 +35,7 @@ namespace BramrApi.Controllers
             //       .AddData("Lol","yep");
             await Task.Delay(1);
             return ApiResponse.Oke()
-                    .AddData("dir",io.Directory.GetCurrentDirectory());
+                    .AddData("dir",$"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}");
         }
     }
 }
