@@ -11,14 +11,26 @@ namespace BramrApi.Controllers
     [ApiController]
     public class TestController : ControllerBase
     {
-        private readonly IDatabase database;
+        private readonly IDatabase Database;
+        private readonly INginxCommand CommandService;
+        private readonly IServerBlockWriter ServerBlockWriter;
 
-        public TestController(IDatabase database)
+        public TestController(IDatabase database, INginxCommand commandService, IServerBlockWriter serverBlockWriter)
         {
-            this.database = database;
+            Database = database;
+            CommandService = commandService;
+            ServerBlockWriter = serverBlockWriter;
         }
 
         [HttpGet]
-        public string Index() => "Hello Api :)";
+        public async Task<ApiResponse> Index()
+        {
+            ServerBlockWriter.CreateServerBlock("boris", "bmulder");
+
+            return ApiResponse.Oke()
+                   .AddData("block exist", await ServerBlockWriter.BlockExists("boris"))
+                   .AddData("nginx config result", await CommandService.TestNginxConfiguration())
+                   .AddData("nginx reload result", await CommandService.ReloadNginx());
+        }
     }
 }
