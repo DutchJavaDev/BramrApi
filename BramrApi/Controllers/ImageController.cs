@@ -9,6 +9,7 @@ using System.Linq;
 using BramrApi.Utils;
 using System.Threading.Tasks;
 
+
 namespace BramrApi.Controllers
 {
     [Route("api/[controller]")]
@@ -30,42 +31,51 @@ namespace BramrApi.Controllers
         [Authorize]
         public async Task<ApiResponse> UploadFile([FromForm] IFormFile Image)
         {
-            if (Image != null)
+        
+            if (FileUploadValidator.FileIsImage(Image.OpenReadStream()) == true)
             {
-                var user = await userManager.FindByIdAsync(GetIdentity());
-                if (user != null)
+                if (Image != null)
                 {
-                    string path = Database.GetModelByUserName(user.UserName).ImageDirectory;
-
-                    if (!Directory.Exists(path))
+                    var user = await userManager.FindByIdAsync(GetIdentity());
+                    if (user != null)
                     {
-                        Directory.CreateDirectory(path);
+
+                        string path = Database.GetModelByUserName(user.UserName).ImageDirectory;
+
+                        if (!Directory.Exists(path))
+                        {
+                            Directory.CreateDirectory(path);
+                        }
+
+                        var imagePath = Path.Combine(path, $"{Image.FileName}.png");
+
+                        if (System.IO.File.Exists(imagePath))
+                        {
+                            System.IO.File.Delete(imagePath);
+
+                            await Database.DeleteFileModelByPath(imagePath);
+                        }
+
+                        await Database.AddModel(new FileModel
+                        {
+                            UserName = user.UserName,
+                            FilePath = Path.Combine(path, $"{Image.FileName}.png"),
+                            FileName = $"{Image.FileName}",
+                            FileUri = Utility.CreateFileUri()
+                        });
+
+                        using Stream FileStream = new FileStream(Path.Combine(path, $"{Image.FileName}.png"), FileMode.Create);
+                        await Image.CopyToAsync(FileStream);
+
+                        return ApiResponse.Oke("File uploaded");
                     }
 
-                    var imagePath = Path.Combine(path, $"{Image.FileName}.png");
-
-                    if (System.IO.File.Exists(imagePath))
-                    {
-                        System.IO.File.Delete(imagePath);
-
-                        await Database.DeleteFileModelByPath(imagePath);
-                    }
-
-                    await Database.AddModel(new FileModel
-                    {
-                        UserName = user.UserName,
-                        FilePath = Path.Combine(path, $"{Image.FileName}.png"),
-                        FileName = $"{Image.FileName}",
-                        FileUri = Utility.CreateFileUri()
-                    });
-
-                    using Stream FileStream = new FileStream(Path.Combine(path, $"{Image.FileName}.png"), FileMode.Create);
-                    await Image.CopyToAsync(FileStream);
-
-                    return ApiResponse.Oke("File uploaded");
+                    return ApiResponse.Error("Can't find user");
                 }
-
-                return ApiResponse.Error("Can't find user");
+            }
+            else
+            {
+                return ApiResponse.Error("Cannot validate file.");
             }
 
             return ApiResponse.Error("Can't find file");
