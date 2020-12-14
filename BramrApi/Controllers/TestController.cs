@@ -26,16 +26,13 @@ namespace BramrApi.Controllers
         [HttpGet]
         public async Task<ApiResponse> Index()
         {
-            //ServerBlockWriter.CreateServerBlock("boris", "bmulder");
+            ServerBlockWriter.CreateServerBlock("boris", "bmulder");
 
-            //return ApiResponse.Oke()
-            //       .AddData("block exist", await ServerBlockWriter.BlockExists("boris"))
-            //       .AddData("nginx config result", await CommandService.TestNginxConfiguration())
-            //       .AddData("nginx reload result", await CommandService.ReloadNginx())
-            //       .AddData("Lol","yep");
-            await Task.Delay(1);
             return ApiResponse.Oke()
-                    .AddData("dir",$"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}");
+                   .AddData("block exist", await ServerBlockWriter.BlockExists("boris"))
+                   .AddData("nginx config result", await CommandService.TestNginxConfiguration())
+                   .AddData("nginx reload result", await CommandService.ReloadNginx())
+                   .AddData("Lol", "yep");
         }
     }
 }

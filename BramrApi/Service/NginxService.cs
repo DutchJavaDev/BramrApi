@@ -22,10 +22,10 @@ namespace BramrApi.Service
         public NginxService()
         {
 #if !DEBUG
-            Directory.SetCurrentDirectory($"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}");
+             Directory.SetCurrentDirectory($"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}");
 #endif
-            //if (!Directory.Exists(WEBSITES_DIRECTORY))
-            //    Directory.CreateDirectory(WEBSITES_DIRECTORY);
+            if (!Directory.Exists(WEBSITES_DIRECTORY))
+                Directory.CreateDirectory(WEBSITES_DIRECTORY);
         }
 
         public UserProfile CreateUser(string username)
@@ -56,7 +56,7 @@ namespace BramrApi.Service
                 
                 var indexDirectory = directory.CreateSubdirectory(INDEX_DIRECTORY);
 
-                var path = Path.Combine(Path.Combine(WEBSITES_DIRECTORY, dir), dir);
+                var path = Path.Combine(Path.Combine(WEBSITES_DIRECTORY, Path.Combine("dir", "index.html")), dir);
 
                 File.WriteAllText(path,"");
 
@@ -97,12 +97,12 @@ namespace BramrApi.Service
 
         public async Task<string> ReloadNginx()
         {
-            return await ExecuteCommand(FileName: "/usr/bin/nginx", Args: "-s reload");
+            return await ExecuteCommand(FileName: "/usr/bin/nginx", Args: "nginx -s reload");
         }
 
         public async Task<string> TestNginxConfiguration()
         {
-            return await ExecuteCommand(FileName: "/usr/bin/nginx", Args: "-t");
+            return await ExecuteCommand(FileName: "/usr/bin/nginx", Args: "nginx -t");
         }
 
         private async Task<string> ExecuteCommand(string FileName = "", string Args ="") 
