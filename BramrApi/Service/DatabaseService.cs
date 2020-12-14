@@ -118,7 +118,11 @@ namespace BramrApi.Service
         {
             using ISession session = SessionFactory.OpenSession();
             using ITransaction transaction = session.BeginTransaction();
-            await session.DeleteAsync(session.Query<HistoryModel>().Where(m => m.UserName == username).FirstOrDefault());
+            var items = session.Query<HistoryModel>().Where(m => m.UserName == username).ToList();
+            foreach (var item in items)
+            {
+                await session.DeleteAsync(item);
+            }
             await transaction.CommitAsync();
         }
 
@@ -126,7 +130,7 @@ namespace BramrApi.Service
         {
             using ISession session = SessionFactory.OpenSession();
             using ITransaction transaction = session.BeginTransaction();
-            var items = session.Query<HistoryModel>().Where(m => m.UserName == username).Where(e => e.Location >= location).ToList();
+            var items = session.Query<HistoryModel>().Where(m => m.UserName == username).Where(e => e.Location > location).ToList();
             foreach (var item in items)
             {
                 await session.DeleteAsync(item);
