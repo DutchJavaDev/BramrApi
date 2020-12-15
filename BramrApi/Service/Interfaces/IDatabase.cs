@@ -38,6 +38,11 @@ namespace BramrApi.Service.Interfaces
 
         public Task DeleteAllHistoryModelsFromLocationByUsername(string username, int location);
 
+        public Task DeleteAllTextAndImageModelsByUsername(string username);
+
+        public List<TextModel> GetAllTextModelsByUsername(string username);
+        public List<ImageModel> GetAllImageModelsByUsername(string username);
+
         public List<T> GetAllModels<T>() where T : DatabaseModel;
     }
 }
