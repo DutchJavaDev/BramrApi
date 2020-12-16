@@ -178,6 +178,24 @@ namespace BramrApi.Service
             return session.Query<ImageModel>().Where(m => m.UserName == username).ToList();
         }
 
+        public List<object> GetAllDesignElementsByUsername(string username)
+        {
+            using ISession session = SessionFactory.OpenSession();
+            using ITransaction transaction = session.BeginTransaction();
+            List<TextModel> textelements = session.Query<TextModel>().Where(m => m.UserName == username).ToList();
+            List<ImageModel> images =  session.Query<ImageModel>().Where(m => m.UserName == username).ToList();
+            List<object> AllElements = new List<object>();
+            foreach (var item in textelements)
+            {
+                AllElements.Add(item);
+            }
+            foreach (var item in images)
+            {
+                AllElements.Add(item);
+            }
+            return AllElements;
+        }
+
         public void SetConnectionString(string connection)
         {
             ConnectionString = connection;

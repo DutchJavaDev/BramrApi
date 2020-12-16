@@ -29,50 +29,87 @@ namespace BramrApi.Controllers
             this.Database = Database;
         }
 
-        [HttpPost("upload")]
+        [HttpPost("uploadcv")]
         [Authorize]
-        public async Task<ApiResponse> UploadCV([FromBody] string TextElements)
+        public async Task<ApiResponse> UploadCV([FromBody] string DesignElements)
         {
             var user = await UserManager.FindByIdAsync(GetIdentity());
             if (user != null)
             {
-                try
+                return await UploadTemplateToDatabase(user, DesignElements, 15, 1, true);
+            }
+
+            return ApiResponse.Error("Can't find user");
+        }
+
+        [HttpPost("uploadportfolio")]
+        [Authorize]
+        public async Task<ApiResponse> UploadPortfolio([FromBody] string DesignElements)
+        {
+            var user = await UserManager.FindByIdAsync(GetIdentity());
+            if (user != null)
+            {
+                return await UploadTemplateToDatabase(user, DesignElements, 0, 0, false);
+            }
+
+            return ApiResponse.Error("Can't find user");
+        }
+
+        [HttpGet("get")]
+        [Authorize]
+        public async Task<List<object>> GetLiveSite()
+        {
+            var user = await UserManager.FindByIdAsync(GetIdentity());
+            if (user != null)
+            {
+                return Database.GetAllDesignElementsByUsername(user.UserName);
+            }
+
+            return new List<object>();
+        }
+
+        [NonAction]
+        private async Task<ApiResponse> UploadTemplateToDatabase(IdentityUser user, string DesignElements, int TextAmount, int ImageAmount, bool IsCV)
+        {
+            try
+            {
+                string path = Database.GetModelByUserName(user.UserName).WebsiteDirectory;
+
+                if (!Directory.Exists(path))
                 {
-                    string path = Database.GetModelByUserName(user.UserName).WebsiteDirectory;
+                    Directory.CreateDirectory(path);
+                }
 
-                    if (!Directory.Exists(path))
+                await Database.DeleteAllTextAndImageModelsByUsername(user.UserName);
+
+                List<object> AllModels = JsonConvert.DeserializeObject<List<object>>(DesignElements);
+
+                for (int i = 0; i < TextAmount; i++)
+                {
+                    TextModel textmodel = JsonConvert.DeserializeObject<TextModel>(AllModels[i].ToString());
+                    await Database.AddModel(new TextModel
                     {
-                        Directory.CreateDirectory(path);
-                    }
-
-                    await Database.DeleteAllTextAndImageModelsByUsername(user.UserName);
-
-                    List<object> AllModels = JsonConvert.DeserializeObject<List<object>>(TextElements);
-
-                    for (int i = 0; i < 2; i++)
-                    {
-                        TextModel textmodel = JsonConvert.DeserializeObject<TextModel>(AllModels[i].ToString());
-                        await Database.AddModel(new TextModel
-                        {
-                            UserName = user.UserName,
-                            Location = i,
-                            Text = textmodel.Text,
-                            TextColor = textmodel.TextColor,
-                            BackgroundColor = textmodel.BackgroundColor,
-                            Bold = textmodel.Bold,
-                            Italic = textmodel.Italic,
-                            Underlined = textmodel.Underlined,
-                            Strikedthrough = textmodel.Strikedthrough,
-                            TextAllignment = textmodel.TextAllignment,
-                            Fontsize = textmodel.Fontsize
-                        });
-                    }
-                    ImageModel imagemodel = JsonConvert.DeserializeObject<ImageModel>(AllModels[2].ToString());
+                        UserName = user.UserName,
+                        Location = i,
+                        Text = textmodel.Text,
+                        TextColor = textmodel.TextColor,
+                        BackgroundColor = textmodel.BackgroundColor,
+                        Bold = textmodel.Bold,
+                        Italic = textmodel.Italic,
+                        Underlined = textmodel.Underlined,
+                        Strikedthrough = textmodel.Strikedthrough,
+                        TextAllignment = textmodel.TextAllignment,
+                        Fontsize = textmodel.Fontsize
+                    });
+                }
+                for (int i = TextAmount; i < ImageAmount + TextAmount; i++)
+                {
+                    ImageModel imagemodel = JsonConvert.DeserializeObject<ImageModel>(AllModels[i].ToString());
                     await Database.AddModel(new ImageModel
                     {
                         UserName = user.UserName,
                         FileUri = imagemodel.FileUri,
-                        Location = 2,
+                        Location = i,
                         Width = imagemodel.Width,
                         Height = imagemodel.Height,
                         Alt = imagemodel.Alt,
@@ -82,24 +119,30 @@ namespace BramrApi.Controllers
                         ObjectFitSet = imagemodel.ObjectFitSet,
                         Padding = imagemodel.Padding
                     });
+                }
 
-                    return CreateHTML(user);
-                }
-                catch (Exception e)
-                {
-                    return ApiResponse.Error(e.ToString());
-                }
+                return CreateHTML(user, IsCV);
             }
-
-            return ApiResponse.Error("Can't find user");
+            catch (Exception e)
+            {
+                return ApiResponse.Error(e.ToString());
+            }
         }
 
         [NonAction]
-        private ApiResponse CreateHTML(IdentityUser user)
+        private ApiResponse CreateHTML(IdentityUser user, bool IsCV)
         {
             try
             {
-                string template = System.IO.File.ReadAllText(@"Templates\cv_template.html");
+                string template;
+                if (IsCV)
+                {
+                    template = System.IO.File.ReadAllText(@"Templates\cv_template.html");
+                }
+                else
+                {
+                    template = System.IO.File.ReadAllText(@"Templates\portfolio_template.html");
+                }
                 UserProfile userProfile = Database.GetModelByUserName(user.UserName);
                 List<TextModel> AllTextModels = Database.GetAllTextModelsByUsername(user.UserName);
                 List<ImageModel> AllImageModels = Database.GetAllImageModelsByUsername(user.UserName);
@@ -112,7 +155,7 @@ namespace BramrApi.Controllers
                 }
                 for (int i = AllTextModels.Count; i < AllImageModels.Count + AllTextModels.Count; i++)
                 {
-                    var imagemodel = AllImageModels[i];
+                    var imagemodel = AllImageModels[i - AllTextModels.Count];
                     var imagePath = Database.GetFileModelByUri(imagemodel.FileUri).FilePath;
                     string html = $"<img src=\"{imagePath}\" alt=\"{imagemodel.Alt}\" style=\"float:{(imagemodel.FloatSet == "0" ? "none" : imagemodel.FloatSet)}; opacity:{imagemodel.Opacity.ToString().Replace(",", ".")}; width:{imagemodel.Width}%; height:{imagemodel.Height}px; padding:{imagemodel.Padding}px; border;{imagemodel.Border}px solid black; object-fit:{(imagemodel.ObjectFitSet == "0" ? "cover" : imagemodel.ObjectFitSet)};\"/>";
                     template = template.Replace($"[**{i}**]", html);
