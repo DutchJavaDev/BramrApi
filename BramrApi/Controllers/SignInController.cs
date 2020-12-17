@@ -21,13 +21,13 @@ namespace BramrApi.Controllers
         // Provides the APIs for managing user logins identity
         private readonly SignInManager<IdentityUser> signInManager;
 
-        private readonly IDatabase database;
+        private readonly IDatabase Database;
 
         public SignInController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IDatabase database)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
-            this.database = database;
+            this.Database = database;
         }
 
         [HttpGet("verify/jwt")]
@@ -67,12 +67,19 @@ namespace BramrApi.Controllers
                     // TODO add roles when we diceide to use them
                     var token = IdentityConfig.GenerateJWT(user, userRoles: null);
 
-                    // get profile
-                    var profile = database.GetModelByIdentity<UserProfile>(user.Id);
+                    if (Database.UserNameExist(user.UserName))
+                    {
+                        // get profile
+                        var profile = Database.GetModelByIdentity<UserProfile>(user.Id);
 
-                    return ApiResponse.Oke("Sucess")
-                            .AddData("jwt_token", token)
-                            .AddData("username", profile.UserName);
+                        return ApiResponse.Oke("Sucess")
+                                .AddData("jwt_token", token)
+                                .AddData("username", profile.UserName);
+                    }
+                    else
+                    {
+                        return ApiResponse.Error("Could not find profile");
+                    }
                 }
                 else
                 {
