@@ -35,6 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Static\default.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\cv_template.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
