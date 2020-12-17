@@ -23,6 +23,12 @@ namespace BramrApi.Controllers
         private readonly IDatabase Database;
         private readonly UserManager<IdentityUser> UserManager;
 
+#if DEBUG
+        private readonly string IMAGE_BASE_URL = @"https://localhost:44372/api/image/download/";
+#else
+        private readonly string IMAGE_BASE_URL = @"https://bramr.tech/api/image/download/";
+#endif
+
         public WebsiteController(UserManager<IdentityUser> UserManager, IDatabase Database)
         {
             this.UserManager = UserManager;
@@ -87,7 +93,7 @@ namespace BramrApi.Controllers
                 for (int i = 0; i < TextAmount; i++)
                 {
                     TextModel textmodel = JsonConvert.DeserializeObject<TextModel>(AllModels[i].ToString());
-                    await Database.AddModel(new TextModel
+                    await Database.AddOrUpdateModel(new TextModel
                     {
                         UserName = user.UserName,
                         Location = i,
@@ -105,7 +111,7 @@ namespace BramrApi.Controllers
                 for (int i = TextAmount; i < ImageAmount + TextAmount; i++)
                 {
                     ImageModel imagemodel = JsonConvert.DeserializeObject<ImageModel>(AllModels[i].ToString());
-                    await Database.AddModel(new ImageModel
+                    await Database.AddOrUpdateModel(new ImageModel
                     {
                         UserName = user.UserName,
                         FileUri = imagemodel.FileUri,
@@ -155,9 +161,11 @@ namespace BramrApi.Controllers
                 }
                 for (int i = AllTextModels.Count; i < AllImageModels.Count + AllTextModels.Count; i++)
                 {
-                    var imagemodel = AllImageModels[i - AllTextModels.Count];
+                    var index = i - AllTextModels.Count;
+
+                    var imagemodel = AllImageModels[index];
                     var imagePath = Database.GetFileModelByUri(imagemodel.FileUri).FilePath;
-                    string html = $"<img src=\"{imagePath}\" alt=\"{imagemodel.Alt}\" style=\"float:{(imagemodel.FloatSet == "0" ? "none" : imagemodel.FloatSet)}; opacity:{imagemodel.Opacity.ToString().Replace(",", ".")}; width:{imagemodel.Width}%; height:{imagemodel.Height}px; padding:{imagemodel.Padding}px; border;{imagemodel.Border}px solid black; object-fit:{(imagemodel.ObjectFitSet == "0" ? "cover" : imagemodel.ObjectFitSet)};\"/>";
+                    string html = $"<img src=\"{IMAGE_BASE_URL}{imagemodel.FileUri}\" alt=\"{imagemodel.Alt}\" style=\"float:{(imagemodel.FloatSet == "0" ? "none" : imagemodel.FloatSet)}; opacity:{imagemodel.Opacity.ToString().Replace(",", ".")}; width:{imagemodel.Width}%; height:{imagemodel.Height}px; padding:{imagemodel.Padding}px; border;{imagemodel.Border}px solid black; object-fit:{(imagemodel.ObjectFitSet == "0" ? "cover" : imagemodel.ObjectFitSet)};\"/>";
                     template = template.Replace($"[**{i}**]", html);
                 }
 
