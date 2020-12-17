@@ -46,4 +46,46 @@ namespace BramrApi.Database
             Map(e => e.Edit);
         }
     }
+
+    public class TextModelMapper : ClassMap<TextModel>
+    {
+        public TextModelMapper()
+        {
+            Table("textmodels_table");
+            Id(e => e.Id);
+            Map(e => e.CreationDate);
+            Map(e => e.UserName);
+            Map(e => e.Location);
+            Map(e => e.Text);
+            Map(e => e.TextColor);
+            Map(e => e.BackgroundColor);
+            Map(e => e.Bold);
+            Map(e => e.Italic);
+            Map(e => e.Underlined);
+            Map(e => e.Strikedthrough);
+            Map(e => e.TextAllignment);
+            Map(e => e.Fontsize);
+        }
+    }
+
+    public class ImageModelMapper : ClassMap<ImageModel>
+    {
+        public ImageModelMapper()
+        {
+            Table("imagemodels_table");
+            Id(e => e.Id);
+            Map(e => e.CreationDate);
+            Map(e => e.UserName);
+            Map(e => e.FileUri);
+            Map(e => e.Location);
+            Map(e => e.Width);
+            Map(e => e.Height);
+            Map(e => e.Alt);
+            Map(e => e.Border);
+            Map(e => e.FloatSet);
+            Map(e => e.Opacity);
+            Map(e => e.ObjectFitSet);
+            Map(e => e.Padding);
+        }
+    }
 }

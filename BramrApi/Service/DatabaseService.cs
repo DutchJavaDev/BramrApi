@@ -42,6 +42,15 @@ namespace BramrApi.Service
             await transaction.CommitAsync();
         }
 
+        public async Task UpdateModel<T>(T model) where T : DatabaseModel
+        {
+            using ISession session = SessionFactory.OpenSession();
+            using ITransaction transaction = session.BeginTransaction();
+            model.CreationDate = DateTime.Now;
+            await session.SaveOrUpdateAsync(model);
+            await transaction.CommitAsync();
+        }
+
         public async Task DeleteModel<T>(T model) where T : DatabaseModel
         {
             using ISession session = SessionFactory.OpenSession();
@@ -125,7 +134,11 @@ namespace BramrApi.Service
         {
             using ISession session = SessionFactory.OpenSession();
             using ITransaction transaction = session.BeginTransaction();
-            await session.DeleteAsync(session.Query<HistoryModel>().Where(m => m.UserName == username).FirstOrDefault());
+            var items = session.Query<HistoryModel>().Where(m => m.UserName == username).ToList();
+            foreach (var item in items)
+            {
+                await session.DeleteAsync(item);
+            }
             await transaction.CommitAsync();
         }
 
@@ -133,7 +146,7 @@ namespace BramrApi.Service
         {
             using ISession session = SessionFactory.OpenSession();
             using ITransaction transaction = session.BeginTransaction();
-            var items = session.Query<HistoryModel>().Where(m => m.UserName == username).Where(e => e.Location >= location).ToList();
+            var items = session.Query<HistoryModel>().Where(m => m.UserName == username).Where(e => e.Location > location).ToList();
             foreach (var item in items)
             {
                 await session.DeleteAsync(item);
@@ -141,18 +154,58 @@ namespace BramrApi.Service
             await transaction.CommitAsync();
         }
 
-        public void SetConnectionString(string connection)
-        {
-            ConnectionString = connection;
-        }
-
-        public async Task UpdateModel<T>(T model) where T : DatabaseModel
+        public async Task DeleteAllTextAndImageModelsByUsername(string username)
         {
             using ISession session = SessionFactory.OpenSession();
             using ITransaction transaction = session.BeginTransaction();
-            model.CreationDate = DateTime.Now;
-            await session.SaveOrUpdateAsync(model);
+            var textmodels = session.Query<TextModel>().Where(m => m.UserName == username).ToList();
+            var imagemodels = session.Query<ImageModel>().Where(m => m.UserName == username).ToList();
+            foreach (var item in textmodels)
+            {
+                await session.DeleteAsync(item);
+            }
+            foreach (var item in imagemodels)
+            {
+                await session.DeleteAsync(item);
+            }
             await transaction.CommitAsync();
+        }
+
+        public List<TextModel> GetAllTextModelsByUsername(string username)
+        {
+            using ISession session = SessionFactory.OpenSession();
+            using ITransaction transaction = session.BeginTransaction();
+            return session.Query<TextModel>().Where(m => m.UserName == username).ToList();
+        }
+
+        public List<ImageModel> GetAllImageModelsByUsername(string username)
+        {
+            using ISession session = SessionFactory.OpenSession();
+            using ITransaction transaction = session.BeginTransaction();
+            return session.Query<ImageModel>().Where(m => m.UserName == username).ToList();
+        }
+
+        public List<object> GetAllDesignElementsByUsername(string username)
+        {
+            using ISession session = SessionFactory.OpenSession();
+            using ITransaction transaction = session.BeginTransaction();
+            List<TextModel> textelements = session.Query<TextModel>().Where(m => m.UserName == username).ToList();
+            List<ImageModel> images =  session.Query<ImageModel>().Where(m => m.UserName == username).ToList();
+            List<object> AllElements = new List<object>();
+            foreach (var item in textelements)
+            {
+                AllElements.Add(item);
+            }
+            foreach (var item in images)
+            {
+                AllElements.Add(item);
+            }
+            return AllElements;
+        }
+
+        public void SetConnectionString(string connection)
+        {
+            ConnectionString = connection;
         }
 
         private ISessionFactory GetSessionFactory()
