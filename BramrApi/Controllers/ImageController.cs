@@ -27,78 +27,6 @@ namespace BramrApi.Controllers
             this.Database = Database;
         }
 
-        [HttpPost("upload")]
-        [Authorize]
-        public async Task<ApiResponse> UploadFile([FromForm] IFormFile Image)
-        {
-        
-            if (FileUploadValidator.FileIsImage(Image.OpenReadStream()) == true)
-            {
-                if (Image != null)
-                {
-                    var user = await userManager.FindByIdAsync(GetIdentity());
-                    if (user != null)
-                    {
-
-                        string path = Database.GetModelByUserName(user.UserName).ImageDirectory;
-
-                        if (!Directory.Exists(path))
-                        {
-                            Directory.CreateDirectory(path);
-                        }
-
-                        // You can also update the filemodel so that you wont need to delete and create a new one 
-                        //await Database.DeleteFileModelByPath(imagePath);
-                        var model = Database.GetFileModelByPath(imagePath);
-
-                        model.Identity = user.Id;
-                        model.FilePath = Path.Combine(path, $"{Image.FileName}.png");
-                        model.FileName = $"{Image.FileName}";
-                        model.FileUri = Utility.CreateFileUri();
-
-                        // AddModel can also update an existing model
-                        await Database.AddOrUpdateModel(model);
-                    }
-                    else
-                    {
-                        await Database.AddOrUpdateModel(new FileModel
-                        {
-                            UserName = user.UserName,
-                            FilePath = Path.Combine(path, $"{Image.FileName}.png"),
-                            FileName = $"{Image.FileName}",
-                            FileUri = Utility.CreateFileUri(),
-                        });
-                    }
-
-
-                            await Database.DeleteFileModelByPath(imagePath);
-                        }
-
-                        await Database.AddModel(new FileModel
-                        {
-                            UserName = user.UserName,
-                            FilePath = Path.Combine(path, $"{Image.FileName}.png"),
-                            FileName = $"{Image.FileName}",
-                            FileUri = Utility.CreateFileUri()
-                        });
-
-                        using Stream FileStream = new FileStream(Path.Combine(path, $"{Image.FileName}.png"), FileMode.Create);
-                        await Image.CopyToAsync(FileStream);
-
-                        return ApiResponse.Oke("File uploaded");
-                    }
-
-                    return ApiResponse.Error("Can't find user");
-                }
-            }
-            else
-            {
-                return ApiResponse.Error("Cannot validate file.");
-            }
-
-            return ApiResponse.Error("Can't find file");
-        }
-
         [HttpGet("info/{type}")]
         [Authorize]
         public async Task<string> GetFileInfo(string type)
@@ -119,6 +47,77 @@ namespace BramrApi.Controllers
                 return File(System.IO.File.ReadAllBytes(file.FilePath), $"image/png");
 
             return NotFound();
+        }
+
+        [HttpPost("upload")]
+        [Authorize]
+        public async Task<ApiResponse> UploadFile([FromForm] IFormFile Image)
+        {
+
+            if (FileUploadValidator.FileIsImage(Image.OpenReadStream()))
+            {
+                if (Image != null)
+                {
+
+                    var identity = GetIdentity();
+
+                    var user = await userManager.FindByIdAsync(identity);
+                    if (user != null)
+                    {
+
+                        string path = Database.GetModelByUserName(user.UserName).ImageDirectory;
+
+                        if (!Directory.Exists(path))
+                        {
+                            Directory.CreateDirectory(path);
+                        }
+
+                        var imagePath = Path.Combine(path, $"{Image.FileName}.png");
+
+                        // You can also update the filemodel so that you wont need to delete and create a new one 
+                        //await Database.DeleteFileModelByPath(imagePath);
+                        var model = Database.GetFileModelByPath(imagePath);
+
+                        if (model != null)
+                        {
+                            model.Identity = user.Id;
+                            model.FilePath = Path.Combine(path, $"{Image.FileName}.png");
+                            model.FileName = $"{Image.FileName}";
+                            model.FileUri = Utility.CreateFileUri();
+
+                            // AddModel can also update an existing model
+                            await Database.AddOrUpdateModel(model);
+                        }
+                        else
+                        {
+                            await Database.AddOrUpdateModel(new FileModel
+                            {
+                                UserName = user.UserName,
+                                FilePath = Path.Combine(path, $"{Image.FileName}.png"),
+                                FileName = $"{Image.FileName}",
+                                FileUri = Utility.CreateFileUri(),
+                                Identity = user.Id
+                            });
+                        }
+
+                        using Stream FileStream = new FileStream(Path.Combine(path, $"{Image.FileName}.png"), FileMode.Create);
+                        await Image.CopyToAsync(FileStream);
+
+                        return ApiResponse.Oke("File uploaded");
+                    }
+                    else
+                    {
+                        return ApiResponse.Error("Can't find user");
+                    }
+
+                }
+                else
+                    return ApiResponse.Error("Can't find file");
+            }
+            else
+            {
+                return ApiResponse.Error("Cannot validate file.");
+            }
         }
 
         [NonAction]
