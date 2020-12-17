@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System;
 using BramrApi.Service.Interfaces;
 using System.Linq;
+using System.Text;
 
 using io = System.IO;
 namespace BramrApi.Controllers
@@ -21,7 +22,7 @@ namespace BramrApi.Controllers
         private readonly IDatabase Database;
 
         // Server
-        private readonly INginxCommand CommandService;
+        private readonly IAPICommand CommandService;
 
         // Mail
         private readonly ISMTP MailClient;
@@ -38,7 +39,7 @@ namespace BramrApi.Controllers
         };
 
         // Constructor
-        public SignUpController(UserManager<IdentityUser> umanager, ISMTP mailClient, IDatabase database, INginxCommand commandService)
+        public SignUpController(UserManager<IdentityUser> umanager, ISMTP mailClient, IDatabase database, IAPICommand commandService)
         {
             UserManager = umanager;
             MailClient = mailClient;
@@ -85,7 +86,7 @@ namespace BramrApi.Controllers
                     UserName = model.UserName,
                 };
 
-                // Gen password?    
+                // Gen password
                  var password = GenerateRandomPassword();
 
                 // Create a user with function
@@ -95,34 +96,43 @@ namespace BramrApi.Controllers
                 {
                     user = await UserManager.FindByEmailAsync(model.Email);
 
-                    var userprofile = CommandService.CreateUser(user.UserName);
+                    var userprofile = CommandService.CreateUser(model.UserName);
 
                     if (userprofile == null)
                     {
                         // Break opperation
-                        await UserManager.DeleteAsync(user);
+                        await DeleteAccount(user);
 
                         return ApiResponse.Error("Failed to create profile");
                     }
 
-                    userprofile.Identity = user.Id;
+                    if (CommandService.CreateWebsiteDirectory(model.UserName))
+                    {
+                        userprofile.Identity = user.Id;
 
-                    await Database.AddOrUpdateModel(userprofile);
+                        await Database.AddOrUpdateModel(userprofile);
 
-                    #region QRCode black magic by Mathijs
-                    QrCodeGenerator qrGen = new QrCodeGenerator();
+                        #region QRCode black magic by Mathijs
+                        QrCodeGenerator qrGen = new QrCodeGenerator();
 
-                    qrGen.CreateQR($"https://bramr.tech/{model.UserName}", model.UserName);
+                        qrGen.CreateQR($"https://bramr.tech/{model.UserName}", model.UserName);
 
-                    MailClient.SendPasswordEmail(model.Email, password, model.UserName);
+                        MailClient.SendPasswordEmail(model.Email, password, model.UserName);
 #if DEBUG
-                    io.File.Delete($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\{model.UserName}.jpeg");
+                        io.File.Delete($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\{model.UserName}.jpeg");
 #else
                     io.File.Delete(@$"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\{model.UserName}.jpeg");
 #endif
-                    #endregion
-                    //👋
-                    return ApiResponse.Oke("Account has been created");
+                        #endregion
+                        //👋
+                        return ApiResponse.Oke("Account has been created");
+                    }
+                    else
+                    {
+                        await DeleteAccount(user);
+
+                        return ApiResponse.Error("CWD failed");
+                    }
                 }
                 else
                 {
@@ -143,6 +153,28 @@ namespace BramrApi.Controllers
             //👋
             // Model is invalid
             return ApiResponse.Error("Not all required fields have been filled in"); 
+        }
+
+        [NonAction]
+        private async Task DeleteAccount(IdentityUser user)
+        {
+            if (user == null) return;
+
+            var result = await UserManager.DeleteAsync(user);
+
+            if (!result.Succeeded)
+            {
+                var builder = new StringBuilder();
+
+                builder.AppendLine($"[User] {user.Email}{Environment.NewLine}");
+
+                foreach (var error in result.Errors)
+                {
+                    builder.AppendLine($"[{error.Code}] '{error.Description}'");
+                }
+
+                Sentry.SentrySdk.CaptureMessage($"Identity [DeleteAccount] errors {Environment.NewLine}", Sentry.Protocol.SentryLevel.Warning);
+            }
         }
 
         //Stole this from stackoverflow, might not use it. Ask group
