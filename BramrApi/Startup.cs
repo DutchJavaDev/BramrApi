@@ -100,7 +100,7 @@ namespace BramrApi
 
             /// Services
             services.AddScoped<IServerBlockWriter, ServerBlockWriterService>();
-            services.AddScoped<INginxCommand, NginxService>();
+            services.AddScoped<IAPICommand, APIService>();
             services.AddSingleton<IDatabase, DatabaseService>();
             services.AddScoped<ISMTP, SMTPMailService>();
         }
@@ -151,7 +151,7 @@ namespace BramrApi
 #if DEBUG
             var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
             var db = serviceProvider.GetRequiredService<IDatabase>();
-            var cmd = serviceProvider.GetRequiredService<INginxCommand>();
+            var cmd = serviceProvider.GetRequiredService<IAPICommand>();
 
             if (await userManager.FindByEmailAsync("admin@bramr.tech") == null)
             {
@@ -163,10 +163,17 @@ namespace BramrApi
 
                 var user = await userManager.FindByEmailAsync("admin@bramr.tech");
                 var profile = cmd.CreateUser("admin");
-                profile.Identity = user.Id;
-                await db.AddOrUpdateModel(profile);
+
+                if (profile != null)
+                {
+                    profile.Identity = user.Id;
+                    await db.AddOrUpdateModel(profile);
+                }
+                else
+                {
+                    Sentry.SentrySdk.CaptureMessage("Failed to create admin");
+                }
             }
-           
 #endif
         }
     }
