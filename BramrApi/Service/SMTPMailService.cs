@@ -30,6 +30,23 @@ namespace BramrApi.Service
                
             }
         }
+        public void SendPasswordChangedEmail(string email, string username)
+        {
+            try
+            {
+                MailMessage mail = new MailMessage();
+                mail.IsBodyHtml = true;
+                mail.From = new MailAddress("bramrinfo@gmail.com");
+                mail.To.Add(email);
+                mail.Subject = "Uw Bramr wachtwoord is gewijzigd.";
+                mail.Body = @$"<p>Beste {username}, </p> <p>Uw wachtwoord op bramr.tech is gewijzigd. Heeft u dit <b>niet</b> zelf gedaan? neem dan contact met ons op via bramrinfo@gmail.com</p><p></p><p>Met vriendelijke groet, team Bramr</p>";
+                CreateClient().Send(mail);
+            }
+            catch (Exception)
+            {
+               
+            }
+        }
 
         private SmtpClient CreateClient()
             {

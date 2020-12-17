@@ -6,5 +6,6 @@ namespace BramrApi.Service.Interfaces
     public interface ISMTP
     {
         void SendPasswordEmail(string email, string password, string username);
+        void SendPasswordChangedEmail(string email, string username);
     }
 }

@@ -19,12 +19,14 @@ namespace BramrApi.Controllers
         private readonly IDatabase Database;
         private readonly UserManager<IdentityUser> UserManager;
         private readonly SignInManager<IdentityUser> SignInManager;
+        private readonly ISMTP MailClient;
 
-        public PasswordController(UserManager<IdentityUser> UserManager, SignInManager<IdentityUser> SignInManager, IDatabase Database)
+        public PasswordController(UserManager<IdentityUser> UserManager, SignInManager<IdentityUser> SignInManager, IDatabase Database, ISMTP mailClient)
         {
             this.UserManager = UserManager;
             this.SignInManager = SignInManager;
             this.Database = Database;
+            MailClient = mailClient;
         }
 
         [HttpPost("change")]
@@ -43,6 +45,7 @@ namespace BramrApi.Controllers
                     var result = await UserManager.ResetPasswordAsync(user, token, passwords[1]);
                     if (result.Succeeded)
                     {
+                        MailClient.SendPasswordChangedEmail(user.Email, user.UserName);
                         return ApiResponse.Oke("Password succesfully changed.");
                     }
                     else
