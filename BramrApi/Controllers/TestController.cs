@@ -1,9 +1,7 @@
 ﻿using BramrApi.Service.Interfaces;
-using BramrApi.Data;
-using System;
 using System.Threading.Tasks;
-using BramrApi.Database.Data;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 
 namespace BramrApi.Controllers
 {
@@ -13,12 +11,22 @@ namespace BramrApi.Controllers
     {
         private readonly IDatabase database;
 
-        public TestController(IDatabase database)
+        private readonly IAPICommand command;
+
+        public TestController(IDatabase database, IAPICommand command)
         {
             this.database = database;
+            this.command = command;
         }
 
         [HttpGet]
         public string Index() => "Hello Api :)";
+
+
+        [HttpGet("cv/{username}")]
+        public async Task<IActionResult> Cv(string username)
+        {
+            return Content(await command.GetIndexFor(username),"text/html", Encoding.UTF8);
+        }
     }
 }
