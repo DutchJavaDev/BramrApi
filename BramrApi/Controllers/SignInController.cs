@@ -16,25 +16,25 @@ namespace BramrApi.Controllers
     public class SignInController : ControllerBase
     {
         // Provides the APIs for managing user in identity
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<IdentityUser> UserManager;
 
         // Provides the APIs for managing user logins identity
-        private readonly SignInManager<IdentityUser> signInManager;
+        private readonly SignInManager<IdentityUser> SignInManager;
 
         private readonly IDatabase Database;
 
         public SignInController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IDatabase database)
         {
-            this.userManager = userManager;
-            this.signInManager = signInManager;
-            this.Database = database;
+            UserManager = userManager;
+            SignInManager = signInManager;
+            Database = database;
         }
 
         [HttpGet("verify/jwt")]
         [Authorize]
         public async Task<IActionResult> JWTValidation()
         {
-            var user = await userManager.FindByIdAsync(GetIdentity());
+            var user = await UserManager.FindByIdAsync(GetIdentity());
 
             if (user == null)
                 return NotFound();
@@ -54,13 +54,13 @@ namespace BramrApi.Controllers
             if (ModelState.IsValid)
             {
                 // First check if the user can be found
-                var user = await userManager.FindByEmailAsync(model.Email);
+                var user = await UserManager.FindByEmailAsync(model.Email);
 
                 if (user == null)
                     return ApiResponse.Error("User not found!");
 
                 // Try a password signin
-                var result = await signInManager.PasswordSignInAsync(user, model.Password, false, false);
+                var result = await SignInManager.PasswordSignInAsync(user, model.Password, false, false);
 
                 if (result.Succeeded)
                 {

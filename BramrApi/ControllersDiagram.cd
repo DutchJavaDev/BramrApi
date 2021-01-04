@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="BramrApi.Controllers.EditHistoryController">
+    <Position X="0.5" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAgACAAEAAAAAAAAAAAAAAAAAEAAIEAAAAAIAAAAA=</HashCode>
+      <FileName>Controllers\EditHistoryController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BramrApi.Controllers.ImageController">
+    <Position X="2.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAEAACAAEAAAAAAACAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\ImageController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BramrApi.Controllers.PasswordController">
+    <Position X="4.25" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAGAAgAAAAAAgAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\PasswordController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BramrApi.Controllers.SignInController">
+    <Position X="6.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAEAAAAAAAAAgAAAAAAAEAAAAAAEAAAEAAAA=</HashCode>
+      <FileName>Controllers\SignInController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BramrApi.Controllers.SignUpController">
+    <Position X="3.25" Y="3.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AACAAACAAGAAAAAAAAAAAEAAAAAAACAAABEAAQAAAAA=</HashCode>
+      <FileName>Controllers\SignUpController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BramrApi.Controllers.WebsiteController">
+    <Position X="0.5" Y="3.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAEAgAAAAAABACAAAAAIEAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\WebsiteController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

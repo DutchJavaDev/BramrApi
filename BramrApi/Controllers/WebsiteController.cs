@@ -29,10 +29,10 @@ namespace BramrApi.Controllers
         private readonly string IMAGE_BASE_URL = @"https://bramr.tech/api/image/download/";
 #endif
 
-        public WebsiteController(UserManager<IdentityUser> UserManager, IDatabase Database)
+        public WebsiteController(UserManager<IdentityUser> userManager, IDatabase database)
         {
-            this.UserManager = UserManager;
-            this.Database = Database;
+            UserManager = userManager;
+            Database = database;
         }
 
         [HttpPost("uploadcv")]

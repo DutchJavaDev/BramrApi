@@ -19,11 +19,11 @@ namespace BramrApi.Controllers
         private readonly IDatabase Database;
 
         // Provides the APIs for managing user in identity
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<IdentityUser> UserManager;
 
         public ImageController(UserManager<IdentityUser> userManager, IDatabase Database)
         {
-            this.userManager = userManager;
+            this.UserManager = userManager;
             this.Database = Database;
         }
 
@@ -31,7 +31,7 @@ namespace BramrApi.Controllers
         [Authorize]
         public async Task<string> GetFileInfo(string type)
         {
-            var user = await userManager.FindByIdAsync(GetIdentity());
+            var user = await UserManager.FindByIdAsync(GetIdentity());
             return Database.GetFileModel(user.UserName, type).FileUri;
         }
 
@@ -61,7 +61,7 @@ namespace BramrApi.Controllers
 
                     var identity = GetIdentity();
 
-                    var user = await userManager.FindByIdAsync(identity);
+                    var user = await UserManager.FindByIdAsync(identity);
                     if (user != null)
                     {
 

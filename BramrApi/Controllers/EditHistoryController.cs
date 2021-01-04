@@ -20,11 +20,11 @@ namespace BramrApi.Controllers
         private readonly IDatabase Database;
 
         // Provides the API with managing user in identity
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<IdentityUser> UserManager;
 
         public EditHistoryController(UserManager<IdentityUser> userManager, IDatabase Database)
         {
-            this.userManager = userManager;
+            this.UserManager = userManager;
             this.Database = Database;
         }
 
@@ -32,7 +32,7 @@ namespace BramrApi.Controllers
         [Authorize]
         public async Task<HistoryModel> GetEdit(int location)
         {
-            var user = await userManager.FindByIdAsync(GetIdentity());
+            var user = await UserManager.FindByIdAsync(GetIdentity());
             return Database.GetHistoryModel(user.UserName, location);
         }
 
@@ -40,7 +40,7 @@ namespace BramrApi.Controllers
         [Authorize]
         public async Task<ApiResponse> PostEdit([FromBody] HistoryModel CurrentEdit)
         {
-            var user = await userManager.FindByIdAsync(GetIdentity());
+            var user = await UserManager.FindByIdAsync(GetIdentity());
 
             if (user == null)
             {
@@ -63,7 +63,7 @@ namespace BramrApi.Controllers
         [Authorize]
         public async Task<ApiResponse> DeleteAllEdits()
         {
-            var user = await userManager.FindByIdAsync(GetIdentity());
+            var user = await UserManager.FindByIdAsync(GetIdentity());
 
             if (user == null)
             {
@@ -79,7 +79,7 @@ namespace BramrApi.Controllers
         [Authorize]
         public async Task<ApiResponse> DeleteAllEditsFrom(int location)
         {
-            var user = await userManager.FindByIdAsync(GetIdentity());
+            var user = await UserManager.FindByIdAsync(GetIdentity());
 
             if (user == null)
             {
