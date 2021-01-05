@@ -106,7 +106,7 @@ namespace BramrApi.Controllers
                         return ApiResponse.Error("Failed to create profile");
                     }
 
-                    if (CommandService.CreateWebsiteDirectory(model.UserName))
+                    if (!CommandService.CreateWebsiteDirectory(model.UserName))
                     {
                         userprofile.Identity = user.Id;
 
@@ -115,7 +115,7 @@ namespace BramrApi.Controllers
                         #region QRCode black magic by Mathijs
                         QrCodeGenerator qrGen = new QrCodeGenerator();
 
-                        qrGen.CreateQR($"https://bramr.tech/{model.UserName}", model.UserName);
+                        qrGen.CreateQR($"https://bramr.tech/api/test/cv/{model.UserName}", model.UserName); //api url is temp
 
                         MailClient.SendPasswordEmail(model.Email, password, model.UserName);
 #if DEBUG

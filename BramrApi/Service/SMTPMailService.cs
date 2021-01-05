@@ -67,12 +67,37 @@ namespace BramrApi.Service
             return mail;
         }
 
+       
+
         private AlternateView GetEmbeddedImage( string password, string username, LinkedResource res)// string filePath
         {
             //LinkedResource res = new LinkedResource(filePath, new ContentType("image/jpeg"));
             res.ContentId = Guid.NewGuid().ToString();
-            string htmlBody = $@"<p>Beste {username}, </p><p>Bedankt voor het aanmaken van uw Bramr account. Uw wachtwoord is: <b>{password}</b> </p>" + @"<img style=''width: 300px; height: 300px;'' src='cid:" + res.ContentId + @"'/>";
-                
+            string stylesheet = @"img {
+                                    border-radius: 8px;
+                                   }
+                                  p{
+                                     text-align: center;
+                                   }
+                                  div{ background-color: gray;}";
+
+            string htmlBody = $@"
+                      <html>
+                       <head>
+                        <style type=''text / css''>
+                            {stylesheet}
+                        </style>
+                        </head>
+                        <body >
+                           <div>
+                            <p>Beste {username}, </p>
+                            <p>Bedankt voor het aanmaken van uw Bramr account. Uw wachtwoord is: <b>{password}</b></p>
+                            <p>Hier is een QRcode voor uw eigen Bramr Pagina.</p>
+                            <img src='cid:" + res.ContentId + @" '/>
+                            </div>
+                        </body>
+                      </html>";
+
             AlternateView alternateView = AlternateView.CreateAlternateViewFromString(htmlBody, null, MediaTypeNames.Text.Html);
             alternateView.LinkedResources.Add(res);
             
