@@ -29,6 +29,11 @@ namespace BramrApi.Controllers
             MailClient = mailClient;
         }
 
+        /// <summary>
+        /// Method waarmee het huidige wachtwoord wordt aangepast met het nieuwe wachtwoord
+        /// </summary>
+        /// <param name="json">Json string die meegestuurd wordt vanaf BramrSite</param>
+        /// <returns>Stuurt een ApiResponse terug om aan de client kant te weten hoe het aan de api kant verlopen is</returns>
         [HttpPost("change")]
         [Authorize]
         public async Task<ApiResponse> ChangePassword([FromBody] string json)

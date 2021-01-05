@@ -35,6 +35,19 @@ namespace BramrApi.Controllers
             Database = database;
         }
 
+        [HttpGet("get")]
+        [Authorize]
+        public async Task<List<object>> GetLiveSite()
+        {
+            var user = await UserManager.FindByIdAsync(GetIdentity());
+            if (user != null)
+            {
+                return Database.GetAllDesignElementsByUsername(user.UserName);
+            }
+
+            return new List<object>();
+        }
+
         [HttpPost("uploadcv")]
         [Authorize]
         public async Task<ApiResponse> UploadCV([FromBody] string DesignElements)
@@ -59,19 +72,6 @@ namespace BramrApi.Controllers
             }
 
             return ApiResponse.Error("Can't find user");
-        }
-
-        [HttpGet("get")]
-        [Authorize]
-        public async Task<List<object>> GetLiveSite()
-        {
-            var user = await UserManager.FindByIdAsync(GetIdentity());
-            if (user != null)
-            {
-                return Database.GetAllDesignElementsByUsername(user.UserName);
-            }
-
-            return new List<object>();
         }
 
         [NonAction]
