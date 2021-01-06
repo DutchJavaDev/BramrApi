@@ -47,7 +47,40 @@ namespace BramrApi.Service
                
             }
         }
+        public void SendPasswordForgottenEmail(string email, string username, string token)
+        {
+            try
+            {
+                MailMessage mail = new MailMessage();
+                mail.IsBodyHtml = true;
+                mail.From = new MailAddress("bramrinfo@gmail.com");
+                mail.To.Add(email);
+                mail.Subject = "Bramr Wachtwoord Vergeten.";
+                mail.Body = @$"<p>Beste {username}, </p> <p>U heeft aangegeven dat u uw wachtwoord bent vergeten klik hier https://localhost:44368/wachtwoord/vergeten?Token={token} om uw wachtwoord te veranderen. Heeft u dit <b>niet</b> zelf gedaan? neem dan contact met ons op via bramrinfo@gmail.com</p><p></p><p>Met vriendelijke groet, team Bramr</p>";
+                CreateClient().Send(mail);
+            }
+            catch (Exception)
+            {
 
+            }
+        }
+        public void SendNewPasswordEmail(string username,string email, string newPassword)
+        {
+            try
+            {
+                MailMessage mail = new MailMessage();
+                mail.IsBodyHtml = true;
+                mail.From = new MailAddress("bramrinfo@gmail.com");
+                mail.To.Add(email);
+                mail.Subject = "Bramr Wachtwoord Vergeten.";
+                mail.Body = @$"<p>Beste {username}, </p>uw nieuwe wachtwoord is: <b>{newPassword}</b></p>";
+                CreateClient().Send(mail);
+            }
+            catch (Exception)
+            {
+
+            }
+        }
         private SmtpClient CreateClient()
             {
                 return new SmtpClient("smtp.gmail.com", 587) {
@@ -69,9 +102,8 @@ namespace BramrApi.Service
 
        
 
-        private AlternateView GetEmbeddedImage( string password, string username, LinkedResource res)// string filePath
+        private AlternateView GetEmbeddedImage( string password, string username, LinkedResource res)
         {
-            //LinkedResource res = new LinkedResource(filePath, new ContentType("image/jpeg"));
             res.ContentId = Guid.NewGuid().ToString();
             string stylesheet = @"img {
                                     border-radius: 8px;
@@ -79,7 +111,7 @@ namespace BramrApi.Service
                                   p{
                                      text-align: center;
                                    }
-                                  div{ background-color: gray;}";
+                                  div{ background-color: gray;}";// place css here
 
             string htmlBody = $@"
                       <html>
@@ -96,7 +128,7 @@ namespace BramrApi.Service
                             <img src='cid:" + res.ContentId + @" '/>
                             </div>
                         </body>
-                      </html>";
+                      </html>";// html over here
 
             AlternateView alternateView = AlternateView.CreateAlternateViewFromString(htmlBody, null, MediaTypeNames.Text.Html);
             alternateView.LinkedResources.Add(res);
