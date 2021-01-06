@@ -68,7 +68,7 @@ namespace BramrApi.Controllers
             var user = await UserManager.FindByIdAsync(GetIdentity());
             if (user != null)
             {
-                return await UploadTemplateToDatabase(user, DesignElements, 0, 0, false);
+                return await UploadTemplateToDatabase(user, DesignElements, 37, 4, false);
             }
 
             return ApiResponse.Error("Can't find user");
