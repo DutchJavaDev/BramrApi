@@ -30,5 +30,7 @@ namespace BramrApi.Database.Data
         public virtual string ObjectFitSet { get; set; }
         [Required]
         public virtual int Padding { get; set; }
+        [Required]
+        public virtual string TemplateType { get; set; }
     }
 }

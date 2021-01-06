@@ -14,7 +14,12 @@ namespace BramrApi.Database
             Map(m => m.Identity);
             Map(m => m.UserName);
             Map(m => m.WebsiteDirectory);
-            Map(m => m.ImageDirectory);
+            Map(m => m.CvDirectory);
+            Map(m => m.PortfolioDirectory);
+            Map(m => m.IndexCvDirectory);
+            Map(m => m.IndexPortfolioDirectory);
+            Map(m => m.ImageCvDirectory);
+            Map(m => m.ImagePortfolioDirectory);
         }
     }
 
@@ -65,6 +70,7 @@ namespace BramrApi.Database
             Map(e => e.Strikedthrough);
             Map(e => e.TextAllignment);
             Map(e => e.Fontsize);
+            Map(e => e.TemplateType);
         }
     }
 
@@ -86,6 +92,7 @@ namespace BramrApi.Database
             Map(e => e.Opacity);
             Map(e => e.ObjectFitSet);
             Map(e => e.Padding);
+            Map(e => e.TemplateType);
         }
     }
 }

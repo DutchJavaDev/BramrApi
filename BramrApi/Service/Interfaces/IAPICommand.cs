@@ -9,7 +9,7 @@ namespace BramrApi.Service.Interfaces
 
         void DeleteWebsiteDirectory(string name);
 
-        Task<string> GetIndexFor(string username);
+        Task<string> GetIndexFor(string username, bool IsCV);
 
         UserProfile CreateUser(string username);
     }

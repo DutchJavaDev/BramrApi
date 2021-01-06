@@ -154,12 +154,22 @@ namespace BramrApi.Service
             await transaction.CommitAsync();
         }
 
-        public async Task DeleteAllTextAndImageModelsByUsername(string username)
+        public async Task DeleteAllDesignModelsByUsernameAndType(string username, bool isCv)
         {
             using ISession session = SessionFactory.OpenSession();
             using ITransaction transaction = session.BeginTransaction();
-            var textmodels = session.Query<TextModel>().Where(m => m.UserName == username).ToList();
-            var imagemodels = session.Query<ImageModel>().Where(m => m.UserName == username).ToList();
+            List<TextModel> textmodels;
+            List<ImageModel> imagemodels;
+            if (isCv)
+            {
+                textmodels = session.Query<TextModel>().Where(m => m.UserName == username).Where(e => e.TemplateType == "Cv").ToList();
+                imagemodels = session.Query<ImageModel>().Where(m => m.UserName == username).Where(e => e.TemplateType == "Cv").ToList();
+            }
+            else
+            {
+                textmodels = session.Query<TextModel>().Where(m => m.UserName == username).Where(e => e.TemplateType == "Portfolio").ToList();
+                imagemodels = session.Query<ImageModel>().Where(m => m.UserName == username).Where(e => e.TemplateType == "Portfolio").ToList();
+            }
             foreach (var item in textmodels)
             {
                 await session.DeleteAsync(item);

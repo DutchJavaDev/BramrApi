@@ -30,5 +30,7 @@ namespace BramrApi.Database.Data
         public virtual string TextAllignment { get; set; }
         [Required]
         public virtual int Fontsize { get; set; }
+        [Required]
+        public virtual string TemplateType { get; set; }
     }
 }

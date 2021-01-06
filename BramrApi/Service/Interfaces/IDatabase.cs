@@ -38,7 +38,7 @@ namespace BramrApi.Service.Interfaces
 
         public Task DeleteAllHistoryModelsFromLocationByUsername(string username, int location);
 
-        public Task DeleteAllTextAndImageModelsByUsername(string username);
+        public Task DeleteAllDesignModelsByUsernameAndType(string username, bool isCv);
 
         public List<TextModel> GetAllTextModelsByUsername(string username);
 

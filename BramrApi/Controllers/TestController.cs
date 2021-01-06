@@ -26,7 +26,7 @@ namespace BramrApi.Controllers
         [HttpGet("cv/{username}")]
         public async Task<IActionResult> Cv(string username)
         {
-            return Content(await command.GetIndexFor(username),"text/html", Encoding.UTF8);
+            return Content(await command.GetIndexFor(username, true),"text/html", Encoding.UTF8);
         }
     }
 }

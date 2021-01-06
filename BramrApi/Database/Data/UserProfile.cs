@@ -4,6 +4,11 @@
     {
         public virtual string UserName { get; set; }
         public virtual string WebsiteDirectory { get; set; }
-        public virtual string ImageDirectory { get; set; }
+        public virtual string CvDirectory { get; set; }
+        public virtual string PortfolioDirectory { get; set; }
+        public virtual string IndexCvDirectory { get; set; }
+        public virtual string IndexPortfolioDirectory { get; set; }
+        public virtual string ImageCvDirectory { get; set; }
+        public virtual string ImagePortfolioDirectory { get; set; }
     }
 }

@@ -86,7 +86,7 @@ namespace BramrApi.Controllers
                     Directory.CreateDirectory(path);
                 }
 
-                await Database.DeleteAllTextAndImageModelsByUsername(user.UserName);
+                await Database.DeleteAllDesignModelsByUsernameAndType(user.UserName, IsCV);
 
                 List<object> AllModels = JsonConvert.DeserializeObject<List<object>>(DesignElements);
 
@@ -105,7 +105,8 @@ namespace BramrApi.Controllers
                         Underlined = textmodel.Underlined,
                         Strikedthrough = textmodel.Strikedthrough,
                         TextAllignment = textmodel.TextAllignment,
-                        Fontsize = textmodel.Fontsize
+                        Fontsize = textmodel.Fontsize,
+                        TemplateType = textmodel.TemplateType
                     });
                 }
                 for (int i = TextAmount; i < ImageAmount + TextAmount; i++)
@@ -123,7 +124,8 @@ namespace BramrApi.Controllers
                         FloatSet = imagemodel.FloatSet,
                         Opacity = imagemodel.Opacity,
                         ObjectFitSet = imagemodel.ObjectFitSet,
-                        Padding = imagemodel.Padding
+                        Padding = imagemodel.Padding,
+                        TemplateType = imagemodel.TemplateType
                     });
                 }
 
@@ -162,14 +164,20 @@ namespace BramrApi.Controllers
                 for (int i = AllTextModels.Count; i < AllImageModels.Count + AllTextModels.Count; i++)
                 {
                     var index = i - AllTextModels.Count;
-
                     var imagemodel = AllImageModels[index];
                     var imagePath = Database.GetFileModelByUri(imagemodel.FileUri).FilePath;
                     string html = $"<img src=\"{IMAGE_BASE_URL}{imagemodel.FileUri}\" alt=\"{imagemodel.Alt}\" style=\"float:{(imagemodel.FloatSet == "0" ? "none" : imagemodel.FloatSet)}; opacity:{imagemodel.Opacity.ToString().Replace(",", ".")}; width:{imagemodel.Width}%; height:{imagemodel.Height}px; padding:{imagemodel.Padding}px; border;{imagemodel.Border}px solid black; object-fit:{(imagemodel.ObjectFitSet == "0" ? "cover" : imagemodel.ObjectFitSet)};\"/>";
                     template = template.Replace($"[**{i}**]", html);
                 }
 
-                System.IO.File.WriteAllText(Path.Combine(userProfile.WebsiteDirectory, "index.html"), template);
+                if (IsCV)
+                {
+                    System.IO.File.WriteAllText(Path.Combine(userProfile.IndexCvDirectory, "index.html"), template);
+                }
+                else
+                {
+                    System.IO.File.WriteAllText(Path.Combine(userProfile.IndexPortfolioDirectory, "index.html"), template);
+                }
 
                 return ApiResponse.Oke("File uploaded");
             }

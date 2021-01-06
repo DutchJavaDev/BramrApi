@@ -16,12 +16,14 @@ namespace BramrApi.Service
 
         private readonly string DEFAULT_INDEX_PATH = @"Static\default.html";
         private readonly string INDEX_FILE_NAME = "index.html";
+        private readonly string CV_DIRECTORY = "cv";
+        private readonly string PORTFOLIO_DIRECTORY = "portfolio";
         private readonly string INDEX_DIRECTORY = "html";
         private readonly string IMAGES_DIRECTORY = "images";
 
         private readonly string DEFAULT_INDEX_CONTENT;
         private readonly string PLACE_HOLDER_MESSAGE = "[MESSAGE]";
-
+        
         public APIService()
         {
             if (!Directory.Exists(WEBSITES_DIRECTORY))
@@ -38,17 +40,26 @@ namespace BramrApi.Service
             }
 
             var websiteDir = Path.Combine(WEBSITES_DIRECTORY, username);
-            var indexDir = Path.Combine(websiteDir, INDEX_DIRECTORY);
-            var imageDir = Path.Combine(indexDir, IMAGES_DIRECTORY);
+            var cvDir = Path.Combine(websiteDir, CV_DIRECTORY);
+            var portfolioDir = Path.Combine(websiteDir, PORTFOLIO_DIRECTORY);
+            var indexCvDir = Path.Combine(cvDir, INDEX_DIRECTORY);
+            var indexPortfolioDir = Path.Combine(portfolioDir, INDEX_DIRECTORY);
+            var imageCvDir = Path.Combine(indexCvDir, IMAGES_DIRECTORY);
+            var imagePortfolioDir = Path.Combine(indexPortfolioDir, IMAGES_DIRECTORY);
 
             return new UserProfile {
                 UserName = username,
-                WebsiteDirectory = indexDir,
-                ImageDirectory = imageDir
+                WebsiteDirectory = websiteDir,
+                CvDirectory = cvDir,
+                PortfolioDirectory = portfolioDir,
+                IndexCvDirectory = indexCvDir,
+                IndexPortfolioDirectory = indexPortfolioDir,
+                ImageCvDirectory = imageCvDir,
+                ImagePortfolioDirectory = imagePortfolioDir
             };
         }
 
-        public async Task<string> GetIndexFor(string username)
+        public async Task<string> GetIndexFor(string username, bool IsCv)
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -56,12 +67,21 @@ namespace BramrApi.Service
             }
 
             var websiteDir = Path.Combine(WEBSITES_DIRECTORY, username);
+            var cvDir = Path.Combine(websiteDir, CV_DIRECTORY);
+            var portfolioDir = Path.Combine(websiteDir, PORTFOLIO_DIRECTORY);
 
             if (Directory.Exists(websiteDir))
             {
-                var indexDir = Path.Combine(websiteDir, INDEX_DIRECTORY);
-
-                return await File.ReadAllTextAsync(Path.Combine(indexDir, INDEX_FILE_NAME));
+                if (IsCv)
+                {
+                    var indexDir = Path.Combine(cvDir, INDEX_DIRECTORY);
+                    return await File.ReadAllTextAsync(Path.Combine(indexDir, INDEX_FILE_NAME));
+                }
+                else
+                {
+                    var indexDir = Path.Combine(portfolioDir, INDEX_DIRECTORY);
+                    return await File.ReadAllTextAsync(Path.Combine(indexDir, INDEX_FILE_NAME));
+                }
             }
             else
                 return DEFAULT_INDEX_CONTENT.Replace(PLACE_HOLDER_MESSAGE, $"'{username}' kon niet worden gevonden, probeer het later nog eens.");
@@ -74,16 +94,23 @@ namespace BramrApi.Service
             try
             {
                 var directory = Directory.CreateDirectory(Path.Combine(WEBSITES_DIRECTORY, dir));
-                
-                var indexDirectory = directory.CreateSubdirectory(INDEX_DIRECTORY);
 
-                var path = Path.Combine(Path.Combine(WEBSITES_DIRECTORY, dir), INDEX_DIRECTORY);
+                var cvDirectory = directory.CreateSubdirectory(CV_DIRECTORY);
+                var portfolioDirectory = directory.CreateSubdirectory(PORTFOLIO_DIRECTORY);
 
-                File.WriteAllText(Path.Combine(path, INDEX_FILE_NAME),DEFAULT_INDEX_CONTENT.Replace(PLACE_HOLDER_MESSAGE, "Wordt aan gewerkt, probeer het later nog eens."));
+                var indexCvDirectory = cvDirectory.CreateSubdirectory(INDEX_DIRECTORY);
+                var indexPortfolioDirectory = portfolioDirectory.CreateSubdirectory(INDEX_DIRECTORY);
 
-                var imageDirectory = indexDirectory.CreateSubdirectory(IMAGES_DIRECTORY);
+                var cvPath = Path.Combine(Path.Combine(Path.Combine(WEBSITES_DIRECTORY, dir), CV_DIRECTORY), INDEX_DIRECTORY);
+                var portfolioPath = Path.Combine(Path.Combine(Path.Combine(WEBSITES_DIRECTORY, dir), PORTFOLIO_DIRECTORY), INDEX_DIRECTORY);
 
-                return directory.Exists && indexDirectory.Exists && imageDirectory.Exists;
+                File.WriteAllText(Path.Combine(cvPath, INDEX_FILE_NAME), DEFAULT_INDEX_CONTENT.Replace(PLACE_HOLDER_MESSAGE, "Wordt aan gewerkt, probeer het later nog eens."));
+                File.WriteAllText(Path.Combine(portfolioPath, INDEX_FILE_NAME), DEFAULT_INDEX_CONTENT.Replace(PLACE_HOLDER_MESSAGE, "Wordt aan gewerkt, probeer het later nog eens."));
+
+                var imageCvDirectory = indexCvDirectory.CreateSubdirectory(IMAGES_DIRECTORY);
+                var imagePortfolioDirectory = indexPortfolioDirectory.CreateSubdirectory(IMAGES_DIRECTORY);
+
+                return directory.Exists && indexCvDirectory.Exists && indexPortfolioDirectory.Exists && imageCvDirectory.Exists && imagePortfolioDirectory.Exists;
             }
             catch (Exception e)
             {

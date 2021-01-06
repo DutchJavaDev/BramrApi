@@ -49,11 +49,23 @@ namespace BramrApi.Controllers
             return NotFound();
         }
 
-        [HttpPost("upload")]
+        [HttpPost("upload/cv")]
         [Authorize]
-        public async Task<ApiResponse> UploadFile([FromForm] IFormFile Image)
+        public async Task<ApiResponse> UploadCvFile([FromForm] IFormFile Image)
         {
+            return await UploadFile(Image, true);
+        }
 
+        [HttpPost("upload/portfolio")]
+        [Authorize]
+        public async Task<ApiResponse> UploadPortfolioFile([FromForm] IFormFile Image)
+        {
+            return await UploadFile(Image, false);
+        }
+
+        [NonAction]
+        public async Task<ApiResponse> UploadFile(IFormFile Image, bool IsCv)
+        {
             if (FileUploadValidator.FileIsImage(Image.OpenReadStream()))
             {
                 if (Image != null)
@@ -64,8 +76,16 @@ namespace BramrApi.Controllers
                     var user = await UserManager.FindByIdAsync(identity);
                     if (user != null)
                     {
+                        string path;
 
-                        string path = Database.GetModelByUserName(user.UserName).ImageDirectory;
+                        if (IsCv)
+                        {
+                            path = Database.GetModelByUserName(user.UserName).ImageCvDirectory;
+                        }
+                        else
+                        {
+                            path = Database.GetModelByUserName(user.UserName).ImagePortfolioDirectory;
+                        }  
 
                         if (!Directory.Exists(path))
                         {
