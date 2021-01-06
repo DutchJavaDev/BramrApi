@@ -74,10 +74,18 @@ namespace BramrApi.Controllers
             try
             {
                 var user = await UserManager.FindByEmailAsync(email);
-                var token = await UserManager.GeneratePasswordResetTokenAsync(user);
-                var tokens = token.Replace("+", "%2B");
-                MailClient.SendPasswordForgottenEmail(email, user.UserName, tokens);
-                return ApiResponse.Oke();
+                if(user != null)
+                {
+                    var token = await UserManager.GeneratePasswordResetTokenAsync(user);
+                    var tokenURL = token.Replace("+", "%2B");
+                    MailClient.SendPasswordForgottenEmail(email, user.UserName, tokenURL);
+                    return ApiResponse.Oke();
+                }
+                else
+                {
+                    return ApiResponse.Error(message: "user not found");
+                }
+                
             }
             catch (Exception e)
             {
@@ -90,8 +98,7 @@ namespace BramrApi.Controllers
         public async Task<ApiResponse> PasswordReset([FromBody]ResetPasswordModel model)
         {
             try
-            {
-                
+            { 
                 var user = await UserManager.FindByEmailAsync(model.Email);
                 var result = await UserManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
                 if (result.Succeeded)
@@ -107,7 +114,6 @@ namespace BramrApi.Controllers
             }
             catch (Exception e)
             {
-
                 return ApiResponse.Error(message: e.ToString());
             }
             

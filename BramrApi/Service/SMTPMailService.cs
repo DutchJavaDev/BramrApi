@@ -55,8 +55,8 @@ namespace BramrApi.Service
                 mail.IsBodyHtml = true;
                 mail.From = new MailAddress("bramrinfo@gmail.com");
                 mail.To.Add(email);
-                mail.Subject = "Bramr Wachtwoord Vergeten.";
-                mail.Body = @$"<p>Beste {username}, </p> <p>U heeft aangegeven dat u uw wachtwoord bent vergeten klik hier https://localhost:44368/wachtwoord/vergeten?Token={token} om uw wachtwoord te veranderen. Heeft u dit <b>niet</b> zelf gedaan? neem dan contact met ons op via bramrinfo@gmail.com</p><p></p><p>Met vriendelijke groet, team Bramr</p>";
+                mail.Subject = "Bramr Wachtwoord Vergeten.";                                                            // https://bramr.tech/wachtwoord/vergeten?Token={token} wanneer het live gaat
+                mail.Body = @$"<p>Beste {username}, </p> <p>U heeft aangegeven dat u uw wachtwoord bent vergeten. <a href='https://localhost:44368/wachtwoord/vergeten?Token={token}'>klik hier</a>  om uw wachtwoord te veranderen. Heeft u dit <b>niet</b> zelf gedaan? dan kunt u dit bericht negeren, of neem contact met ons op via bramrinfo@gmail.com</p><p></p><p>Met vriendelijke groet, team Bramr</p> ";
                 CreateClient().Send(mail);
             }
             catch (Exception)
