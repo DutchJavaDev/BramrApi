@@ -41,12 +41,8 @@ namespace BramrApi.Controllers
         public async Task<List<object>> GetLiveSite()
         {
             var user = await UserManager.FindByIdAsync(GetIdentity());
-            if (user != null)
-            {
-                return Database.GetAllDesignElementsByUsername(user.UserName);
-            }
-
-            return new List<object>();
+            return user == null ? 
+                new List<object>() : Database.GetAllDesignElementsByUsername(user.UserName);
         }
 
         [HttpPost("uploadcv")]
@@ -54,12 +50,8 @@ namespace BramrApi.Controllers
         public async Task<ApiResponse> UploadCV([FromBody] string DesignElements)
         {
             var user = await UserManager.FindByIdAsync(GetIdentity());
-            if (user != null)
-            {
-                return await UploadTemplateToDatabase(user, DesignElements, 15, 1, true);
-            }
-
-            return ApiResponse.Error("Can't find user");
+            return user == null ? 
+                ApiResponse.Error("Can't find user") : await UploadTemplateToDatabase(user, DesignElements, 15, 1, true);
         }
 
         [HttpPost("uploadportfolio")]
@@ -67,12 +59,8 @@ namespace BramrApi.Controllers
         public async Task<ApiResponse> UploadPortfolio([FromBody] string DesignElements)
         {
             var user = await UserManager.FindByIdAsync(GetIdentity());
-            if (user != null)
-            {
-                return await UploadTemplateToDatabase(user, DesignElements, 23, 4, false);
-            }
-
-            return ApiResponse.Error("Can't find user");
+            return user == null ? 
+                ApiResponse.Error("Can't find user") : await UploadTemplateToDatabase(user, DesignElements, 23, 4, false);
         }
 
         [HttpPost("contact")]
@@ -189,7 +177,13 @@ namespace BramrApi.Controllers
                 {
                     var index = i - AllTextModels.Count;
                     var imagemodel = AllImageModels[index];
-                    var imagePath = Database.GetFileModelByUri(imagemodel.FileUri).FilePath;
+
+                    var file = Database.GetFileModelByUri(imagemodel.FileUri);
+
+                    if (file == null) continue;
+
+                    var imagePath = file.FilePath;
+
                     string html = $"<img src=\"{IMAGE_BASE_URL}{imagemodel.FileUri}\" alt=\"{imagemodel.Alt}\" style=\"float:{(imagemodel.FloatSet == "0" ? "none" : imagemodel.FloatSet)}; opacity:{imagemodel.Opacity.ToString().Replace(",", ".")}; width:{imagemodel.Width}%; height:{imagemodel.Height}px; padding:{imagemodel.Padding}px; border;{imagemodel.Border}px solid black; object-fit:{(imagemodel.ObjectFitSet == "0" ? "cover" : imagemodel.ObjectFitSet)};\"/>";
                     template = template.Replace($"[**{i}**]", html);
                 }
