@@ -7,8 +7,8 @@ using System;
 using BramrApi.Service.Interfaces;
 using System.Linq;
 using System.Text;
-
 using io = System.IO;
+
 namespace BramrApi.Controllers
 {
     [Route("api/[controller]")]
@@ -121,7 +121,7 @@ namespace BramrApi.Controllers
 #if DEBUG
                         io.File.Delete($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\{model.UserName}.jpeg");
 #else
-                    io.File.Delete(@$"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\{model.UserName}.jpeg");
+                        io.File.Delete(@$"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\{model.UserName}.jpeg");
 #endif
                         #endregion
                         //👋
