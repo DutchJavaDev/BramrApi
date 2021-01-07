@@ -22,17 +22,18 @@ namespace BramrApi.Controllers
     {
         private readonly IDatabase Database;
         private readonly UserManager<IdentityUser> UserManager;
-
+        private readonly ISMTP MailClient;
 #if DEBUG
         private readonly string IMAGE_BASE_URL = @"https://localhost:44372/api/image/download/";
 #else
         private readonly string IMAGE_BASE_URL = @"https://bramr.tech/api/image/download/";
 #endif
 
-        public WebsiteController(UserManager<IdentityUser> userManager, IDatabase database)
+        public WebsiteController(UserManager<IdentityUser> userManager, IDatabase database, ISMTP MailClient)
         {
             UserManager = userManager;
             Database = database;
+            this.MailClient = MailClient;
         }
 
         [HttpGet("get")]
@@ -72,6 +73,29 @@ namespace BramrApi.Controllers
             }
 
             return ApiResponse.Error("Can't find user");
+        }
+
+        [HttpPost("contact")]
+        public async Task<ApiResponse> Contact([FromForm] ContactFormModel model)
+        {
+            try
+            {
+                var user = await UserManager.FindByNameAsync(model.recipientUsername);
+                if (user != null)
+                {
+                    MailClient.SendContactMail(user.Email, user.UserName, model.sendersName, model.sendersEmail, model.message,model.service);
+                    return ApiResponse.Oke();
+                }
+                else
+                {
+                    return ApiResponse.Error();
+                }
+            }
+            catch (Exception)
+            {
+                return ApiResponse.Error();
+            }
+
         }
 
         [NonAction]

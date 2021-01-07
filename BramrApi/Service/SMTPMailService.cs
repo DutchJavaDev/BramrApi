@@ -64,7 +64,23 @@ namespace BramrApi.Service
 
             }
         }
+        public void SendContactMail(string recipientEmail, string recipientName, string sendersName, string sendersEmail, string message, string service)
+        {
+            try
+            {
+                MailMessage mail = new MailMessage();
+                mail.IsBodyHtml = true;
+                mail.From = new MailAddress("bramrinfo@gmail.com");
+                mail.To.Add(recipientEmail);
+                mail.Subject = $@"{sendersName} heeft u gecontacteerd via Bramr.";
+                mail.Body = @$"<p>Beste, {recipientName}</p><p>Via Bramr heeft iemand u gecontacteerd genaamd {sendersName} wegens {service}, zijn email adres is{sendersEmail}.</p> <p>Het bericht:</p> <i>{message}</i>";
+                CreateClient().Send(mail);
+            }
+            catch (Exception)
+            {
 
+            }
+        }
         private SmtpClient CreateClient()
             {
                 return new SmtpClient("smtp.gmail.com", 587) {
