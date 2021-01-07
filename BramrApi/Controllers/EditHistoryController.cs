@@ -22,12 +22,17 @@ namespace BramrApi.Controllers
         // Provides the API with managing user in identity
         private readonly UserManager<IdentityUser> UserManager;
 
-        public EditHistoryController(UserManager<IdentityUser> userManager, IDatabase Database)
+        public EditHistoryController(UserManager<IdentityUser> UserManager, IDatabase Database)
         {
-            this.UserManager = userManager;
+            this.UserManager = UserManager;
             this.Database = Database;
         }
 
+        /// <summary>
+        /// Haalt het HistoryModel op met de meegestuurde locatie.
+        /// </summary>
+        /// <param name="location">Locatie in de editgeschiedenis van de gebruiker</param>
+        /// <returns>Stuurt het opgehaalde HistoryModel terug.</returns>
         [HttpGet("get/{location}")]
         [Authorize]
         public async Task<HistoryModel> GetEdit(int location)
@@ -36,6 +41,11 @@ namespace BramrApi.Controllers
             return Database.GetHistoryModel(user.UserName, location);
         }
 
+        /// <summary>
+        /// Als iets geëdit wordt wordt die edit opgestuurd naar de api in de vorm van een historymodel die dan weer wordt opgeslagen in de database.
+        /// </summary>
+        /// <param name="CurrentEdit">De edit die zojuist heeft plaatsgevonden en dus opgestuurd werdt naar de api</param>
+        /// <returns>Stuurt een ApiResponse terug zodat na het process de client kant ook weer hoe het process verlopen is.</returns>
         [HttpPost("post")]
         [Authorize]
         public async Task<ApiResponse> PostEdit([FromBody] HistoryModel CurrentEdit)
@@ -59,6 +69,10 @@ namespace BramrApi.Controllers
             return ApiResponse.Oke("Change added to database");
         }
 
+        /// <summary>
+        /// Verwijderd alle edits van een gebruiker die in de database staan.
+        /// </summary>
+        /// <returns>Stuurt een ApiResponse terug zodat na het process de client kant ook weer hoe het process verlopen is.</returns>
         [HttpDelete("delete")]
         [Authorize]
         public async Task<ApiResponse> DeleteAllEdits()
@@ -75,6 +89,10 @@ namespace BramrApi.Controllers
             return ApiResponse.Oke("History succesfully deleted");
         }
 
+        /// <summary>
+        /// Verwijderd alle edits van een gebruiker vanaf een bepaald punt die in de database staan, omdat de gebruiker een aantal edit heeft teruggedraaid en daarna weer iets heeft aangepast.
+        /// </summary>
+        /// <returns>Stuurt een ApiResponse terug zodat na het process de client kant ook weer hoe het process verlopen is.</returns>
         [HttpDelete("deletefrom/{location}")]
         [Authorize]
         public async Task<ApiResponse> DeleteAllEditsFrom(int location)

@@ -69,7 +69,7 @@ namespace BramrApi.Controllers
             var user = await UserManager.FindByIdAsync(GetIdentity());
             if (user != null)
             {
-                return await UploadTemplateToDatabase(user, DesignElements, 37, 4, false);
+                return await UploadTemplateToDatabase(user, DesignElements, 23, 4, false);
             }
 
             return ApiResponse.Error("Can't find user");
@@ -182,7 +182,7 @@ namespace BramrApi.Controllers
                 for (int i = 0; i < AllTextModels.Count; i++)
                 {
                     var textmodel = AllTextModels[i];
-                    string html = $"<p style=\"color:{textmodel.TextColor}; background-color:{textmodel.BackgroundColor}; font-size:{textmodel.Fontsize / 5}vh; text-align:{(textmodel.TextAllignment == "0" ? "left" : textmodel.TextAllignment/* == "1" ? "center" : "right"*/)}\">{(textmodel.Bold ? "<b>" : "")}{(textmodel.Italic ? "<i>" : "")}{(textmodel.Underlined ? "<u>" : "")}{(textmodel.Strikedthrough ? "<s>" : "")}{textmodel.Text}{(textmodel.Bold ? "</b>" : "")}{(textmodel.Italic ? "</i>" : "")}{(textmodel.Underlined ? "</u>" : "")}{(textmodel.Strikedthrough ? "</s>" : "")}</p>";
+                    string html = $"<p style=\"color:{textmodel.TextColor}; background-color:{textmodel.BackgroundColor}; font-size:{textmodel.Fontsize}rem; text-align:{(textmodel.TextAllignment == "0" ? "left" : textmodel.TextAllignment/* == "1" ? "center" : "right"*/)}\">{(textmodel.Bold ? "<b>" : "")}{(textmodel.Italic ? "<i>" : "")}{(textmodel.Underlined ? "<u>" : "")}{(textmodel.Strikedthrough ? "<s>" : "")}{textmodel.Text}{(textmodel.Bold ? "</b>" : "")}{(textmodel.Italic ? "</i>" : "")}{(textmodel.Underlined ? "</u>" : "")}{(textmodel.Strikedthrough ? "</s>" : "")}</p>";
                     template = template.Replace($"[**{i}**]", html);
                 }
                 for (int i = AllTextModels.Count; i < AllImageModels.Count + AllTextModels.Count; i++)

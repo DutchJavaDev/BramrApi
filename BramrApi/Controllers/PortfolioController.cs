@@ -20,6 +20,11 @@ namespace BramrApi.Controllers
             this.command = command;
         }
 
+        /// <summary>
+        /// In de url om de functie aan te roepen geef je de username van de gebruiker mee en via de functie GetIndexFor haalt de api dan het juiste html bestand op.
+        /// </summary>
+        /// <param name="username">Naam van gebruiker</param>
+        /// <returns>Html bestand van het portfolio van de gebruiker.</returns>
         [HttpGet("{username}")]
         public async Task<IActionResult> GetSite(string username)
         {

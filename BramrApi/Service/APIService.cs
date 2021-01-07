@@ -14,6 +14,7 @@ namespace BramrApi.Service
         private readonly string WEBSITES_DIRECTORY = @"\var\www\";
 #endif
 
+        //Alle standaard namen voor de directories van de gebruiker
         private readonly string DEFAULT_INDEX_PATH = @"Static\default.html";
         private readonly string INDEX_FILE_NAME = "index.html";
         private readonly string CV_DIRECTORY = "cv";
@@ -32,6 +33,11 @@ namespace BramrApi.Service
             DEFAULT_INDEX_CONTENT = File.ReadAllText(DEFAULT_INDEX_PATH);
         }
 
+        /// <summary>
+        /// Het aanmaken van een userprofile om deze uiteindelijk op te slaan in de database.
+        /// </summary>
+        /// <param name="username">Username van de gebruiker</param>
+        /// <returns>Stuurt terug het userprofile dat net is aangemaakt</returns>
         public UserProfile CreateUser(string username)
         {
             if (!CreateWebsiteDirectory(username))
@@ -39,6 +45,7 @@ namespace BramrApi.Service
                 return null;
             }
 
+            //Creëert alle paths voor de directories van een user om deze om deze uiteindelijk op te slaan in de properties van het userprofile
             var websiteDir = Path.Combine(WEBSITES_DIRECTORY, username);
             var cvDir = Path.Combine(websiteDir, CV_DIRECTORY);
             var portfolioDir = Path.Combine(websiteDir, PORTFOLIO_DIRECTORY);
@@ -59,6 +66,12 @@ namespace BramrApi.Service
             };
         }
 
+        /// <summary>
+        /// Deze method zorgt voor het ophalen van het html bestand voor het cv of portfolio, om deze live te zetten.
+        /// </summary>
+        /// <param name="username">Username van de gebruiker</param>
+        /// <param name="IsCv">Boolean om te checken of de method het cv of het portfolio terug moet sturen</param>
+        /// <returns>Method stuurt alles wat in het opgehaalde html bestand staat als een string.</returns>
         public async Task<string> GetIndexFor(string username, bool IsCv)
         {
             if (string.IsNullOrEmpty(username))
@@ -87,6 +100,11 @@ namespace BramrApi.Service
                 return DEFAULT_INDEX_CONTENT.Replace(PLACE_HOLDER_MESSAGE, $"'{username}' kon niet worden gevonden, probeer het later nog eens.");
         }
 
+        /// <summary>
+        /// Creëert de volledige directory per gebruiker. 
+        /// </summary>
+        /// <param name="dir">De username van de gebruiker zodat deze gekoppeld wordt aan de map</param>
+        /// <returns>Als alles goed verloopt stuurt de functie terug true en als de directory al bestaat of er iets fout gaat stuurt de functie terug false. Zodat de functie waar deze in wordt aangeroepen weet hoe het process is verlopen.</returns>
         public bool CreateWebsiteDirectory(string dir)
         {
             if (Directory.Exists(Path.Combine(WEBSITES_DIRECTORY, dir))) return false;
@@ -118,7 +136,11 @@ namespace BramrApi.Service
                 return false;
             }
         }
-
+        
+        /// <summary>
+        /// Het verwijderen van de directory van een user, als het account bijvoorbeeld wordt verwijderd.
+        /// </summary>
+        /// <param name="name">Username van de gebruiker</param>
         public void DeleteWebsiteDirectory(string name)
         {
             var directory = new DirectoryInfo(Path.Combine(WEBSITES_DIRECTORY,name));
