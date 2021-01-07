@@ -64,23 +64,7 @@ namespace BramrApi.Service
 
             }
         }
-        public void SendNewPasswordEmail(string username,string email, string newPassword)
-        {
-            try
-            {
-                MailMessage mail = new MailMessage();
-                mail.IsBodyHtml = true;
-                mail.From = new MailAddress("bramrinfo@gmail.com");
-                mail.To.Add(email);
-                mail.Subject = "Bramr Wachtwoord Vergeten.";
-                mail.Body = @$"<p>Beste {username}, </p>uw nieuwe wachtwoord is: <b>{newPassword}</b></p>";
-                CreateClient().Send(mail);
-            }
-            catch (Exception)
-            {
 
-            }
-        }
         private SmtpClient CreateClient()
             {
                 return new SmtpClient("smtp.gmail.com", 587) {
