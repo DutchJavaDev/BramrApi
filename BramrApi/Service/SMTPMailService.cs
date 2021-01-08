@@ -17,12 +17,11 @@ namespace BramrApi.Service
 #if DEBUG
                 using (LinkedResource res = new LinkedResource($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\{username}.jpeg", new ContentType("image/jpeg")))
                 
-                using(LinkedResource kaasRes = new LinkedResource($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\kaas.jpg", new ContentType("image/jpg")))
 #else
                 using (LinkedResource res = new LinkedResource($@"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\{username}.jpeg", new ContentType("image/jpeg")))
 #endif
                 {
-                    MailMessage mailWithImg = GetMailWithImg(email, password, username, res, kaasRes);
+                    MailMessage mailWithImg = GetMailWithImg(email, password, username, res);
                     CreateClient().Send(mailWithImg);
                     res.Dispose();
                 }
@@ -92,7 +91,7 @@ namespace BramrApi.Service
                 };
             }
 
-        private MailMessage GetMailWithImg(string email, string password,string username, LinkedResource res, LinkedResource kaasRes)
+        private MailMessage GetMailWithImg(string email, string password,string username, LinkedResource res)
         {
             MailMessage mail = new MailMessage();
             mail.IsBodyHtml = true;
@@ -108,8 +107,8 @@ namespace BramrApi.Service
         private async Task<AlternateView> GetEmbeddedImage( string password, string username, LinkedResource res)
         {
             res.ContentId = Guid.NewGuid().ToString();
-            MailGenerator g = new MailGenerator();
-            var htmlBody = await g.ietsfozo(username,password, @"<img src='cid:" + res.ContentId + @"'/>") ;// html over here
+            MailGenerator mailGen = new MailGenerator();
+            var htmlBody = await mailGen.GeneratePasswordMail(username,password, @"<img src='cid:" + res.ContentId + @"'/>") ;
             AlternateView alternateView = AlternateView.CreateAlternateViewFromString(htmlBody, null, MediaTypeNames.Text.Html);
             alternateView.LinkedResources.Add(res);
             
