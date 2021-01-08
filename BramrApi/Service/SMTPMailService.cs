@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
 using System.Threading.Tasks;
+using BramrApi.Data;
 
 namespace BramrApi.Service
 {
@@ -15,11 +16,13 @@ namespace BramrApi.Service
             {
 #if DEBUG
                 using (LinkedResource res = new LinkedResource($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\{username}.jpeg", new ContentType("image/jpeg")))
+                
+                using(LinkedResource kaasRes = new LinkedResource($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\kaas.jpg", new ContentType("image/jpg")))
 #else
                 using (LinkedResource res = new LinkedResource($@"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\{username}.jpeg", new ContentType("image/jpeg")))
 #endif
                 {
-                    MailMessage mailWithImg = GetMailWithImg(email, password, username, res);
+                    MailMessage mailWithImg = GetMailWithImg(email, password, username, res, kaasRes);
                     CreateClient().Send(mailWithImg);
                     res.Dispose();
                 }
@@ -89,11 +92,11 @@ namespace BramrApi.Service
                 };
             }
 
-        private MailMessage GetMailWithImg(string email, string password,string username, LinkedResource res)
+        private MailMessage GetMailWithImg(string email, string password,string username, LinkedResource res, LinkedResource kaasRes)
         {
             MailMessage mail = new MailMessage();
             mail.IsBodyHtml = true;
-            mail.AlternateViews.Add(GetEmbeddedImage(password, username,res));
+            mail.AlternateViews.Add(GetEmbeddedImage(password, username,res).Result);
             mail.From = new MailAddress("bramrinfo@gmail.com");
             mail.To.Add(email);
             mail.Subject = "Uw Bramr Account!";
@@ -102,34 +105,11 @@ namespace BramrApi.Service
 
        
 
-        private AlternateView GetEmbeddedImage( string password, string username, LinkedResource res)
+        private async Task<AlternateView> GetEmbeddedImage( string password, string username, LinkedResource res)
         {
             res.ContentId = Guid.NewGuid().ToString();
-            string stylesheet = @"img {
-                                    border-radius: 8px;
-                                   }
-                                  p{
-                                     text-align: center;
-                                   }
-                                  div{ background-color: gray;}";// place css here
-
-            string htmlBody = $@"
-                      <html>
-                       <head>
-                        <style type=''text / css''>
-                            {stylesheet}
-                        </style>
-                        </head>
-                        <body >
-                           <div>
-                            <p>Beste {username}, </p>
-                            <p>Bedankt voor het aanmaken van uw Bramr account. Uw wachtwoord is: <b>{password}</b></p>
-                            <p>Hier is een QRcode voor uw eigen Bramr Pagina.</p>
-                            <img src='cid:" + res.ContentId + @" '/>
-                            </div>
-                        </body>
-                      </html>";// html over here
-
+            MailGenerator g = new MailGenerator();
+            var htmlBody = await g.ietsfozo(username,password, @"<img src='cid:" + res.ContentId + @"'/>") ;// html over here
             AlternateView alternateView = AlternateView.CreateAlternateViewFromString(htmlBody, null, MediaTypeNames.Text.Html);
             alternateView.LinkedResources.Add(res);
             
