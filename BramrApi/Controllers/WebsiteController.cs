@@ -170,21 +170,13 @@ namespace BramrApi.Controllers
                 for (int i = 0; i < AllTextModels.Count; i++)
                 {
                     var textmodel = AllTextModels[i];
-                    string html = $"<p style=\"color:{textmodel.TextColor}; background-color:{textmodel.BackgroundColor}; font-size:{textmodel.Fontsize}rem; text-align:{(textmodel.TextAllignment == "0" ? "left" : textmodel.TextAllignment/* == "1" ? "center" : "right"*/)}\">{(textmodel.Bold ? "<b>" : "")}{(textmodel.Italic ? "<i>" : "")}{(textmodel.Underlined ? "<u>" : "")}{(textmodel.Strikedthrough ? "<s>" : "")}{textmodel.Text}{(textmodel.Bold ? "</b>" : "")}{(textmodel.Italic ? "</i>" : "")}{(textmodel.Underlined ? "</u>" : "")}{(textmodel.Strikedthrough ? "</s>" : "")}</p>";
+                    string html = $"<p style=\"color:{textmodel.TextColor}; background-color:{textmodel.BackgroundColor}; font-size:{textmodel.Fontsize}rem; text-align:{(textmodel.TextAllignment == "0" ? "left" : textmodel.TextAllignment == "1" ? "center" : "right")}\">{(textmodel.Bold ? "<b>" : "")}{(textmodel.Italic ? "<i>" : "")}{(textmodel.Underlined ? "<u>" : "")}{(textmodel.Strikedthrough ? "<s>" : "")}{textmodel.Text}{(textmodel.Bold ? "</b>" : "")}{(textmodel.Italic ? "</i>" : "")}{(textmodel.Underlined ? "</u>" : "")}{(textmodel.Strikedthrough ? "</s>" : "")}</p>";
                     template = template.Replace($"[**{i}**]", html);
                 }
                 for (int i = AllTextModels.Count; i < AllImageModels.Count + AllTextModels.Count; i++)
                 {
-                    var index = i - AllTextModels.Count;
-                    var imagemodel = AllImageModels[index];
-
-                    var file = Database.GetFileModelByUri(imagemodel.FileUri);
-
-                    if (file == null) continue;
-
-                    var imagePath = file.FilePath;
-
-                    string html = $"<img src=\"{IMAGE_BASE_URL}{imagemodel.FileUri}\" alt=\"{imagemodel.Alt}\" style=\"float:{(imagemodel.FloatSet == "0" ? "none" : imagemodel.FloatSet)}; opacity:{imagemodel.Opacity.ToString().Replace(",", ".")}; width:{imagemodel.Width}%; height:{imagemodel.Height}px; padding:{imagemodel.Padding}px; border;{imagemodel.Border}px solid black; object-fit:{(imagemodel.ObjectFitSet == "0" ? "cover" : imagemodel.ObjectFitSet)};\"/>";
+                    var imagemodel = AllImageModels[i - AllTextModels.Count];
+                    string html = $"<img src=\"{(imagemodel.FileUri == null || imagemodel.FileUri == string.Empty ? "" : IMAGE_BASE_URL + imagemodel.FileUri)}\" alt=\"{imagemodel.Alt}\" style=\"float:{(imagemodel.FloatSet == "0" ? "none" : imagemodel.FloatSet)}; opacity:{imagemodel.Opacity.ToString().Replace(",", ".")}; width:{imagemodel.Width}%; height:{imagemodel.Height}px; padding:{imagemodel.Padding}px; border;{imagemodel.Border}px solid black; object-fit:{(imagemodel.ObjectFitSet == "0" ? "cover" : imagemodel.ObjectFitSet)};\"/>";
                     template = template.Replace($"[**{i}**]", html);
                 }
 
