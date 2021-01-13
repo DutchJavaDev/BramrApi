@@ -68,8 +68,11 @@ namespace BramrApi.Database
             Map(e => e.Italic);
             Map(e => e.Underlined);
             Map(e => e.Strikedthrough);
+            Map(e => e.Shadow);
             Map(e => e.TextAllignment);
-            Map(e => e.Fontsize);
+            Map(e => e.Font);
+            Map(e => e.FontSize);
+            Map(e => e.FontWeight);
             Map(e => e.TemplateType);
         }
     }

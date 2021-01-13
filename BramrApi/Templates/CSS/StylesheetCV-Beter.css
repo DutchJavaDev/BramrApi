@@ -1,0 +1,406 @@
+/*  MASTERSTYLES */
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    list-style: none;
+}
+
+body{
+    background: 1px linear-gradient(90deg, rgb(26, 26 , 26), rgb(54, 54, 54));
+    font-family: 'Teko', sans-serif;
+    color: rgb(255, 255, 255);
+    line-height: 22px;
+}
+
+.resume{
+    width: 800px;
+    height: auto;
+    display: flex;
+    margin: 50px auto;
+}
+
+.bold{
+    font-size: 2rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.3);
+    text-transform: uppercase;
+    font-weight: 400;
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.semi-bold{
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* RESUME-LEFT BOVEN -EN ONDERSTUK */
+
+.resume .resume-left{
+    width: 280px;
+    background-color: rgb(26, 26, 26);
+}
+
+.resume .resume-left .resume-profile{
+    width: 100%;
+    height: 280px;
+}
+
+.resume .resume-left .resume-profile img{
+    width: 100%;
+    height: 100%;
+}
+
+.resume .resume-left .resume-content{
+    padding: 0 25px;
+}
+
+.resume .title{
+    margin-bottom: 20px;
+}
+
+.resume .resume-left .regular{
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.resume .resume-item{
+    padding: 25px 0;
+    border-bottom: 2px solid rgb(0, 207, 255);
+}
+
+.resume .resume-left .resume-item:last-child,
+.resume .resume-right .resume-item:last-child{
+    border-bottom: 0px;
+}
+
+.resume .resume-left ul li{
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.resume .resume-left ul li:last-child{
+    margin-bottom: 0;
+}
+
+.resume .resume-left ul li .icon{
+    width: 35px;
+    height: 35px;
+    background: 1px linear-gradient(to right, rgb(6, 255, 248), rgb(0, 207, 255));
+    color: rgb(8, 93, 112);
+    margin-right: 15px;
+    font-size: 1.5rem;
+    position: relative;
+}
+
+.resume .icon i,
+.resume .resume-right .resume-hobby ul li p{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* RESUME-LEFT MIDDENSTUK */
+
+.resume .resume-left ul li .data{
+    color: rgb(255, 255, 255);
+}
+
+.resume .resume-left .resume-skills ul li{
+    color: rgb(255, 255, 255);
+    justify-content: space-between;
+}
+
+.resume .resume-left .resume-skills ul li .skill-name{
+    width: 25%;
+}
+
+.resume .resume-left .resume-skills ul li .skill-progress{
+    width: 60%;
+    margin: 0 5px;
+    height: 5px;
+    background: rgb(255, 255, 255);
+    position: relative;
+}
+
+.resume .resume-left .resume-skills ul li .skill-per{
+    width: 15%;
+}
+
+.resume .resume-left .resume-skills ul li .skill-progress span{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: 1px linear-gradient(to right, rgb(6, 255, 248), rgb(0, 207, 255));
+}
+
+/* RESUME-RIGHT */
+
+.resume .resume-right{
+    width: 520px;
+    background: rgb(36, 36, 36);
+    padding: 25px;
+}
+
+/* RESUME-RIGHT TIMELINE */
+
+.resume .resume-right .resume-work ul,
+.resume .resume-right .resume-education ul{
+    padding-left: 40px;
+    overflow: hidden;
+}
+
+.resume .resume-right ul li{
+    position: relative;
+}
+
+.resume .resume-right ul li .date{
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+.resume .resume-right ul li .info{
+    margin-bottom: 20px;
+}
+
+.resume .resume-right ul li:last-child .info{
+    margin-bottom: 0;
+}
+
+.resume .resume-right .resume-work ul li:before,
+.resume .resume-right .resume-education ul li:before{
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: -25px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    border: 2px solid rgb(0, 207, 255);
+}
+
+.resume .resume-right .resume-work ul li::after,
+.resume .resume-right .resume-education ul li::after{
+    content: "";
+    position: absolute;
+    top: 14px;
+    left: -21px;
+    width: 2px;
+    height: 115px;
+    background: rgb(0, 207, 255);
+}
+
+.resume .resume-right .resume-hobby ul{
+    display: flex;
+    justify-content: space-between;
+}
+
+.resume .resume-right .resume-hobby ul li{
+    width: 80px;
+    height: 80px;
+    border: 2px solid rgb(8, 93, 112);
+    position: relative;
+    border-radius: 50%;
+    color: rgb(255, 255, 255);
+}
+
+.resume .resume-right .resume-hobby ul li p{
+    font-size: 1rem;
+}
+
+.resume .resume-right .resume-hobby ul li:before{
+    content: "";
+    position: absolute;
+    top: 40px;
+    right: -52px;
+    width: 50px;
+    height: 2px;
+    background: rgb(8, 93, 112);
+}
+
+.resume .resume-right .resume-hobby ul li:last-child::before{
+    display: none;
+}
+
+/* EDITOR */
+
+.editor{
+    background: rgb(26, 26, 26);
+    width: 40%;
+    padding: 1rem;
+    margin: 1rem;
+    position: absolute;
+    top: 10%;
+    left: 10%;
+}
+
+.toolbar{
+    width: 100%;
+}
+
+h1{
+    font-size: 1rem;
+    letter-spacing: 2px;
+    color: rgb(0, 207, 255);
+    text-transform: uppercase;
+    font-weight: 400;
+    position: relative;
+    margin: 0 1rem;
+    padding-top: 10px;
+    border-bottom: 1px solid rgb(0, 207, 255);
+}
+
+h3{
+    font-size: 1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 400;
+    margin: 0 10px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+input{
+    font-weight: 400;
+    position: relative;
+    margin: 0.5rem;
+    background:rgb(56, 56, 56);
+    color: rgb(255, 255, 255);
+    font-family: 'Teko', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+}
+
+select{
+    margin: 0.5rem;
+    margin-top: 20px;
+    padding: 0 50px;
+    padding-top: 5px;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    font-family: 'Teko', sans-serif;
+    text-transform: uppercase;
+    font-weight: 400;
+    background:rgb(56, 56, 56);
+    color: rgb(255, 255, 255);
+}
+
+.tool-list-text,
+.tool-list-font,
+.tool-list-img-upload,
+.tool-list-img-edit,
+.tool-list-color{
+    display: flex;
+    flex-flow: row nowrap;
+    list-style: none;
+    padding: 5px auto;
+    margin: 1rem;
+    overflow: hidden;
+}
+
+.tool-btn{
+    display: block;
+    justify-content: center;
+    width: 44px;
+    height: 45px;
+    border: none;
+    padding: .5rem;
+    font-size: 20px;
+    font-family: 'Teko', sans-serif;
+    background:rgb(56, 56, 56);
+    color: rgb(8, 93, 112);
+    margin: 0.2rem;
+}
+
+#output{
+    width: 93%;
+    height: 100px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+    margin-top: 1rem;
+    margin-bottom: 2.3rem;
+    padding: .2rem 1rem;
+    color: rgb(0, 0, 0);
+}
+
+/* EDITOR-MODAL */
+
+#myBtn{
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: initial;
+    background: rgb(0, 207, 255);
+    border: 1px solid rgb(255, 255, 255);
+    padding: 1rem 1rem;
+    cursor: pointer;
+}
+
+#myBtn-back{
+    position: absolute;
+    top: 0%;
+    left: 5%;
+    width: initial;
+    background: rgb(0, 207, 255);
+    border: 1px solid rgb(255, 255, 255);
+    padding: 1rem 1rem;
+    cursor: pointer;
+}
+
+#myBtn-save{
+    position: absolute;
+    top: 0%;
+    left: 9.4%;
+    width: initial;
+    background: rgb(0, 207, 255);
+    border: 1px solid rgb(255, 255, 255);
+    padding: 1rem 1rem;
+    cursor: pointer;
+}
+
+#myBtn i,
+#myBtn-back i,
+#myBtn-save i{
+    font-size: 2rem;
+    color: rgb(255, 255, 255);
+}
+
+.modal{
+    display: none;
+    padding-top: 100px; 
+    overflow: auto; 
+    background: rgb(26, 26, 26);
+    width: 42%;
+    height: 40%;
+    padding: 1rem;
+    margin: 1rem;
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    z-index: 1;
+    cursor: move;
+}
+
+.close {
+    color: rgb(0, 207, 255);
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+    cursor: pointer;
+}

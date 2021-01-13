@@ -27,9 +27,15 @@ namespace BramrApi.Database.Data
         [Required]
         public virtual bool Strikedthrough { get; set; }
         [Required]
+        public virtual bool Shadow { get; set; }
+        [Required]
         public virtual string TextAllignment { get; set; }
         [Required]
-        public virtual double Fontsize { get; set; }
+        public virtual string Font { get; set; }
+        [Required]
+        public virtual double FontSize { get; set; }
+        [Required]
+        public virtual int FontWeight { get; set; }
         [Required]
         public virtual string TemplateType { get; set; }
     }
