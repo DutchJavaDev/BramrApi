@@ -10,6 +10,7 @@ namespace BramrApi.Service
 {
     public class SMTPMailService : ISMTP
     {
+        MailGenerator mailGen = new MailGenerator();
         public void SendPasswordEmail(string email, string password, string username)
         {
             try
@@ -27,9 +28,9 @@ namespace BramrApi.Service
                 }
                 
             }
-            catch (Exception)
+            catch (Exception e)
             {
-               
+                
             }
         }
         public void SendPasswordChangedEmail(string email, string username)
@@ -40,8 +41,8 @@ namespace BramrApi.Service
                 mail.IsBodyHtml = true;
                 mail.From = new MailAddress("bramrinfo@gmail.com");
                 mail.To.Add(email);
-                mail.Subject = "Uw Bramr wachtwoord is gewijzigd.";
-                mail.Body = @$"<p>Beste {username}, </p> <p>Uw wachtwoord op bramr.tech is gewijzigd. Heeft u dit <b>niet</b> zelf gedaan? neem dan contact met ons op via bramrinfo@gmail.com</p><p></p><p>Met vriendelijke groet, team Bramr</p>";
+                mail.Subject = "Your Bramr password has been changed";
+                mail.Body = mailGen.GeneratePasswordChangedMail(username).Result;
                 CreateClient().Send(mail);
             }
             catch (Exception)
@@ -53,15 +54,21 @@ namespace BramrApi.Service
         {
             try
             {
+#if DEBUG
+                var link = $@"https://localhost:44309/wachtwoord/vergeten?Token={token}";
+#else
+                var link = @$"https://bramr.tech/wachtwoord/vergeten?Token={token}";
+#endif
+
                 MailMessage mail = new MailMessage();
                 mail.IsBodyHtml = true;
                 mail.From = new MailAddress("bramrinfo@gmail.com");
                 mail.To.Add(email);
-                mail.Subject = "Bramr Wachtwoord Vergeten.";                                                            // https://bramr.tech/wachtwoord/vergeten?Token={token} wanneer het live gaat
-                mail.Body = @$"<p>Beste {username}, </p> <p>U heeft aangegeven dat u uw wachtwoord bent vergeten. <a href='https://localhost:44368/wachtwoord/vergeten?Token={token}'>klik hier</a>  om uw wachtwoord te veranderen. Heeft u dit <b>niet</b> zelf gedaan? dan kunt u dit bericht negeren, of neem contact met ons op via bramrinfo@gmail.com</p><p></p><p>Met vriendelijke groet, team Bramr</p> ";
+                mail.Subject = "Password recovery.";
+                mail.Body = mailGen.GeneratePasswordRecoveryMail(username, link).Result;
                 CreateClient().Send(mail);
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
             }
@@ -74,8 +81,8 @@ namespace BramrApi.Service
                 mail.IsBodyHtml = true;
                 mail.From = new MailAddress("bramrinfo@gmail.com");
                 mail.To.Add(recipientEmail);
-                mail.Subject = $@"{sendersName} heeft u gecontacteerd via Bramr.";
-                mail.Body = @$"<p>Beste, {recipientName}</p><p>Via Bramr heeft iemand u gecontacteerd genaamd {sendersName} wegens {service}, zijn email adres is{sendersEmail}.</p> <p>Het bericht:</p> <i>{message}</i>";
+                mail.Subject = $@"{sendersName} has contacten you through Bramr.";
+                mail.Body = @$"<p>Dear, {recipientName}</p><p>Someone has contacted you through Bramr.tech his name is {sendersName}. He is sending this mail because of: {service}, his email address is:{sendersEmail}.</p> <p>His message is:</p> <i>{message}</i>";
                 CreateClient().Send(mail);
             }
             catch (Exception)
@@ -98,17 +105,16 @@ namespace BramrApi.Service
             mail.AlternateViews.Add(GetEmbeddedImage(password, username,res).Result);
             mail.From = new MailAddress("bramrinfo@gmail.com");
             mail.To.Add(email);
-            mail.Subject = "Uw Bramr Account!";
+            mail.Subject = "Registration on Bramr!";
             return mail;
         }
 
-       
+        
 
-        private async Task<AlternateView> GetEmbeddedImage( string password, string username, LinkedResource res)
+        private async Task<AlternateView> GetEmbeddedImage(string password, string username, LinkedResource res)
         {
             res.ContentId = Guid.NewGuid().ToString();
-            MailGenerator mailGen = new MailGenerator();
-            var htmlBody = await mailGen.GeneratePasswordMail(username,password, @"<img src='cid:" + res.ContentId + @"'/>") ;
+            var htmlBody = await mailGen.GenerateRegistrationMail(username,password, @"<img src='cid:" + res.ContentId + @"'/>") ;
             AlternateView alternateView = AlternateView.CreateAlternateViewFromString(htmlBody, null, MediaTypeNames.Text.Html);
             alternateView.LinkedResources.Add(res);
             
