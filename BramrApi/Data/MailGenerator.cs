@@ -98,6 +98,35 @@ namespace BramrApi.Data
             return html;
 
         }
+        public async Task<string> GenerateContactMail(string username,string sendersName,string sendersEmail, string message)
+        {
+            var Image1 = "https://i.ibb.co/pngDhMF/logo-size-BRAMR-mail.png";
+            var Image2 = "https://i.ibb.co/x3wSP73/Homepage-achtergrond-mail.png";
+#if DEBUG
+            var html = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate_Contact.html");
+            var style = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate.css");
+#else
+            var html = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate_Contact.html");
+            var style = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate.css");
+#endif
+            var bindings = new Dictionary<string, object>()
+            {
+                {"[USERNAME]", username },
+                {"[STYLE]", style },
+                {"[IMAGE_SOURCE1]", Image1 },
+                {"[IMAGE_SOURCE2]", Image2 },
+                {"[MESSAGE]", message },
+                {"[SENDERS_NAME]", sendersName },
+                {"[SENDERS_EMAIL]", sendersEmail }
+            };
+
+            foreach (var pair in bindings)
+            {
+                html = html.Replace(pair.Key, pair.Value.ToString());
+            }
+            return html;
+
+        }
 
     }
 }

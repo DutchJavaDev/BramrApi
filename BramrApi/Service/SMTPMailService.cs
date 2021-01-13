@@ -82,7 +82,7 @@ namespace BramrApi.Service
                 mail.From = new MailAddress("bramrinfo@gmail.com");
                 mail.To.Add(recipientEmail);
                 mail.Subject = $@"{sendersName} has contacten you through Bramr.";
-                mail.Body = @$"<p>Dear, {recipientName}</p><p>Someone has contacted you through Bramr.tech his name is {sendersName}. He is sending this mail because of: {service}, his email address is:{sendersEmail}.</p> <p>His message is:</p> <i>{message}</i>";
+                mail.Body = mailGen.GenerateContactMail(recipientName, sendersName, sendersEmail, message).Result;
                 CreateClient().Send(mail);
             }
             catch (Exception)
