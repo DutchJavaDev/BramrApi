@@ -181,26 +181,26 @@ namespace BramrApi.Service
             await transaction.CommitAsync();
         }
 
-        public List<TextModel> GetAllTextModelsByUsername(string username)
+        public List<TextModel> GetAllTextModelsByUsername(string username, string template)
         {
             using ISession session = SessionFactory.OpenSession();
             using ITransaction transaction = session.BeginTransaction();
-            return session.Query<TextModel>().Where(m => m.UserName == username).ToList();
+            return session.Query<TextModel>().Where(m => m.UserName == username).Where(e => e.TemplateType == template).ToList();
         }
 
-        public List<ImageModel> GetAllImageModelsByUsername(string username)
+        public List<ImageModel> GetAllImageModelsByUsername(string username, string template)
         {
             using ISession session = SessionFactory.OpenSession();
             using ITransaction transaction = session.BeginTransaction();
-            return session.Query<ImageModel>().Where(m => m.UserName == username).ToList();
+            return session.Query<ImageModel>().Where(m => m.UserName == username).Where(e => e.TemplateType == template).ToList();
         }
 
-        public List<object> GetAllDesignElementsByUsername(string username)
+        public List<object> GetAllDesignElementsByUsername(string username, string template)
         {
             using ISession session = SessionFactory.OpenSession();
             using ITransaction transaction = session.BeginTransaction();
-            List<TextModel> textelements = session.Query<TextModel>().Where(m => m.UserName == username).ToList();
-            List<ImageModel> images =  session.Query<ImageModel>().Where(m => m.UserName == username).ToList();
+            List<TextModel> textelements = session.Query<TextModel>().Where(m => m.UserName == username).Where(e => e.TemplateType == template).ToList();
+            List<ImageModel> images =  session.Query<ImageModel>().Where(m => m.UserName == username).Where(e => e.TemplateType == template).ToList();
             List<object> AllElements = new List<object>();
             foreach (var item in textelements)
             {

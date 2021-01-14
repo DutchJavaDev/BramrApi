@@ -40,11 +40,11 @@ namespace BramrApi.Service.Interfaces
 
         public Task DeleteAllDesignModelsByUsernameAndType(string username, bool isCv);
 
-        public List<TextModel> GetAllTextModelsByUsername(string username);
+        public List<TextModel> GetAllTextModelsByUsername(string username, string template);
 
-        public List<ImageModel> GetAllImageModelsByUsername(string username);
+        public List<ImageModel> GetAllImageModelsByUsername(string username, string template);
 
-        public List<object> GetAllDesignElementsByUsername(string username);
+        public List<object> GetAllDesignElementsByUsername(string username, string template);
 
         public List<T> GetAllModels<T>() where T : DatabaseModel;
     }
