@@ -55,9 +55,9 @@ namespace BramrApi.Service
             try
             {
 #if DEBUG
-                var link = $@"https://localhost:44309/wachtwoord/vergeten?Token={token}";
+                var link = $@"https://localhost:44309/password/recovery?Token={token}";
 #else
-                var link = @$"https://bramr.tech/wachtwoord/vergeten?Token={token}";
+                var link = @$"https://bramr.tech/password/recovery?Token={token}";
 #endif
 
                 MailMessage mail = new MailMessage();

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using BramrApi.Database.Data;
 using System;
+using io = System.IO;
 
 namespace BramrApi.Controllers
 {
@@ -64,24 +65,36 @@ namespace BramrApi.Controllers
         }
 
         [HttpPost("contact")]
-        public async Task<ApiResponse> Contact([FromForm] ContactFormModel model)
+        public async Task<ContentResult> Contact([FromForm] ContactFormModel model)
         {
             try
             {
                 var user = await UserManager.FindByNameAsync(model.recipientUsername);
+#if DEBUG
+                var html = await io.File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\ContactFormResponse.html");
+#else
+                var html = await io.File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\ContactFormResponse.html");
+#endif
                 if (user != null)
                 {
+
+                    html = html.Replace("[MESSAGE1]", "Message successfully delivered.");
+                    html = html.Replace("[MESSAGE2]", "The person you were trying to reach has been send an email with your message.");
+                    
                     MailClient.SendContactMail(user.Email, user.UserName, model.sendersName, model.sendersEmail, model.message,model.service);
-                    return ApiResponse.Oke();
+                    return Content(html,"text/html");
                 }
                 else
                 {
-                    return ApiResponse.Error();
+                    html = html.Replace("[MESSAGE1]", "Message failed to deliver.");
+                    html = html.Replace("[MESSAGE2]", "Something went wrong, please try again.");
+                    return Content(html, "text/html");
                 }
             }
             catch (Exception)
             {
-                return ApiResponse.Error();
+
+                return Content("<b>Something went terribly wrong please notify our developer team by sending an email to Bramrinfo@gmail.com </b>", "text/html");
             }
 
         }
