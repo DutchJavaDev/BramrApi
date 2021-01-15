@@ -20,6 +20,8 @@ namespace BramrApi.Database
             Map(m => m.IndexPortfolioDirectory);
             Map(m => m.ImageCvDirectory);
             Map(m => m.ImagePortfolioDirectory);
+            Map(m => m.HasCv);
+            Map(m => m.HasPortfolio);
         }
     }
 
