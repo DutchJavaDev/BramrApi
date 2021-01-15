@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BramrApi.Data;
 
 namespace BramrApi.Controllers
 {
@@ -45,10 +46,14 @@ namespace BramrApi.Controllers
                     UserInfo.Add($"https://bramr.tech/portfolio/{user.UserName}");
 #endif
                     UserInfo.Add(user.Email);
+                    UserInfo.Add(profile.HasCv.ToString());
+                    UserInfo.Add(profile.HasPortfolio.ToString());
+
                     return UserInfo;
                 }
                 catch 
                 {
+                    // why clear it ?
                     UserInfo.Clear();
                     return UserInfo; 
                 }
