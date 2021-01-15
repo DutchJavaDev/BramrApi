@@ -141,7 +141,7 @@ namespace BramrApi.Controllers
                     });
                 }
 
-                return CreateHTML(user, IsCV);
+                return await CreateHTML(user, IsCV);
             }
             catch (Exception e)
             {
@@ -150,7 +150,7 @@ namespace BramrApi.Controllers
         }
 
         [NonAction]
-        private ApiResponse CreateHTML(IdentityUser user, bool IsCV)
+        private async Task<ApiResponse> CreateHTML(IdentityUser user, bool IsCV)
         {
             try
             {
@@ -166,6 +166,8 @@ namespace BramrApi.Controllers
                 UserProfile userProfile = Database.GetModelByUserName(user.UserName);
                 List<TextModel> AllTextModels = Database.GetAllTextModelsByUsername(user.UserName);
                 List<ImageModel> AllImageModels = Database.GetAllImageModelsByUsername(user.UserName);
+
+                
 
                 for (int i = 0; i < AllTextModels.Count; i++)
                 {
@@ -183,11 +185,15 @@ namespace BramrApi.Controllers
                 if (IsCV)
                 {
                     System.IO.File.WriteAllText(Path.Combine(userProfile.IndexCvDirectory, "index.html"), template);
+                    userProfile.HasCv = IsCV;
                 }
                 else
                 {
                     System.IO.File.WriteAllText(Path.Combine(userProfile.IndexPortfolioDirectory, "index.html"), template);
+                    userProfile.HasPortfolio = !IsCV;
                 }
+
+                await Database.AddOrUpdateModel(userProfile);
 
                 return ApiResponse.Oke("File uploaded");
             }
