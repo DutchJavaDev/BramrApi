@@ -29,7 +29,7 @@ namespace BramrApi.Utils
         }
 
         /// <summary>
-        /// Generates a JWT token that can be used for authentication
+        /// Generates a JWT token based of an identity user that can be used for authentication
         /// </summary>
         /// <param name="user"></param>
         /// <param name="userRoles"></param>
@@ -66,6 +66,10 @@ namespace BramrApi.Utils
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        /// <summary>
+        /// Generates a id for a JWT token
+        /// </summary>
+        /// <returns></returns>
         private static string GenerateJTI()
         {
             return new Guid().ToString();
