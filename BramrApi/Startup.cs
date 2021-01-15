@@ -35,6 +35,7 @@ namespace BramrApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Connection strings for the identity en Bramr database
 #if DEBUG
             IdentityConnectionString = Configuration.GetConnectionString("LocalIdentityConnection");
             BramrConnectionString = Configuration.GetConnectionString("LocalDatabaseConnection");
@@ -43,6 +44,7 @@ namespace BramrApi
             BramrConnectionString = Configuration.GetConnectionString("LiveDatabaseConnection");
 #endif
 
+            // Proxy for nginx hosting
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.KnownProxies.Add(IPAddress.Parse("10.0.0.100"));
