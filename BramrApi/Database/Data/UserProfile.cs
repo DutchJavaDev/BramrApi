@@ -10,5 +10,8 @@
         public virtual string IndexPortfolioDirectory { get; set; }
         public virtual string ImageCvDirectory { get; set; }
         public virtual string ImagePortfolioDirectory { get; set; }
+        public virtual bool HasCv { get; set; }
+        public virtual bool HasPortfolio { get; set; }
+
     }
 }
