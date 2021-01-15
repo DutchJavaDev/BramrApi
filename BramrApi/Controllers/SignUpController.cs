@@ -74,7 +74,7 @@ namespace BramrApi.Controllers
 
                 if (Database.UserNameExist(model.UserName))
                 { 
-                    return ApiResponse.Error("Username is allready taken");
+                    return ApiResponse.Error("Username is already taken");
                 }
 
                 model.UserName = model.UserName.Trim();

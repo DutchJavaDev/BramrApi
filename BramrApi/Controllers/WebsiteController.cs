@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using BramrApi.Database.Data;
 using System;
+using io = System.IO;
 
 namespace BramrApi.Controllers
 {
@@ -36,13 +37,13 @@ namespace BramrApi.Controllers
             this.MailClient = MailClient;
         }
 
-        [HttpGet("get")]
+        [HttpGet("get/{IsCV}")]
         [Authorize]
-        public async Task<List<object>> GetLiveSite()
+        public async Task<List<object>> GetLiveSite(bool IsCV)
         {
             var user = await UserManager.FindByIdAsync(GetIdentity());
             return user == null ? 
-                new List<object>() : Database.GetAllDesignElementsByUsername(user.UserName);
+                new List<object>() : IsCV ? Database.GetAllDesignElementsByUsername(user.UserName, "Cv") : Database.GetAllDesignElementsByUsername(user.UserName, "Portfolio");
         }
 
         [HttpPost("uploadcv")]
@@ -51,7 +52,7 @@ namespace BramrApi.Controllers
         {
             var user = await UserManager.FindByIdAsync(GetIdentity());
             return user == null ? 
-                ApiResponse.Error("Can't find user") : await UploadTemplateToDatabase(user, DesignElements, 15, 1, true);
+                ApiResponse.Error("Can't find user") : await UploadTemplateToDatabase(user, DesignElements, 37, 1, true);
         }
 
         [HttpPost("uploadportfolio")]
@@ -60,28 +61,40 @@ namespace BramrApi.Controllers
         {
             var user = await UserManager.FindByIdAsync(GetIdentity());
             return user == null ? 
-                ApiResponse.Error("Can't find user") : await UploadTemplateToDatabase(user, DesignElements, 23, 4, false);
+                ApiResponse.Error("Can't find user") : await UploadTemplateToDatabase(user, DesignElements, 24, 4, false);
         }
 
         [HttpPost("contact")]
-        public async Task<ApiResponse> Contact([FromForm] ContactFormModel model)
+        public async Task<ContentResult> Contact([FromForm] ContactFormModel model)
         {
             try
             {
                 var user = await UserManager.FindByNameAsync(model.recipientUsername);
+#if DEBUG
+                var html = await io.File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\ContactFormResponse.html");
+#else
+                var html = await io.File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\ContactFormResponse.html");
+#endif
                 if (user != null)
                 {
+
+                    html = html.Replace("[MESSAGE1]", "Message successfully delivered.");
+                    html = html.Replace("[MESSAGE2]", "The person you were trying to reach has been send an email with your message.");
+                    
                     MailClient.SendContactMail(user.Email, user.UserName, model.sendersName, model.sendersEmail, model.message,model.service);
-                    return ApiResponse.Oke();
+                    return Content(html,"text/html");
                 }
                 else
                 {
-                    return ApiResponse.Error();
+                    html = html.Replace("[MESSAGE1]", "Message failed to deliver.");
+                    html = html.Replace("[MESSAGE2]", "Something went wrong, please try again.");
+                    return Content(html, "text/html");
                 }
             }
             catch (Exception)
             {
-                return ApiResponse.Error();
+
+                return Content("<b>Something went terribly wrong please notify our developer team by sending an email to Bramrinfo@gmail.com </b>", "text/html");
             }
 
         }
@@ -117,7 +130,7 @@ namespace BramrApi.Controllers
                         Underlined = textmodel.Underlined,
                         Strikedthrough = textmodel.Strikedthrough,
                         TextAllignment = textmodel.TextAllignment,
-                        Fontsize = textmodel.Fontsize,
+                        FontSize = textmodel.FontSize,
                         TemplateType = textmodel.TemplateType
                     });
                 }
@@ -154,41 +167,54 @@ namespace BramrApi.Controllers
         {
             try
             {
-                string template;
-                if (IsCV)
-                {
-                    template = System.IO.File.ReadAllText(@"Templates\cv_template.html");
-                }
-                else
-                {
-                    template = System.IO.File.ReadAllText(@"Templates\portfolio_template.html");
-                }
                 UserProfile userProfile = Database.GetModelByUserName(user.UserName);
-                List<TextModel> AllTextModels = Database.GetAllTextModelsByUsername(user.UserName);
-                List<ImageModel> AllImageModels = Database.GetAllImageModelsByUsername(user.UserName);
-
-                
-
-                for (int i = 0; i < AllTextModels.Count; i++)
-                {
-                    var textmodel = AllTextModels[i];
-                    string html = $"<p style=\"color:{textmodel.TextColor}; background-color:{textmodel.BackgroundColor}; font-size:{textmodel.Fontsize}rem; text-align:{(textmodel.TextAllignment == "0" ? "left" : textmodel.TextAllignment == "1" ? "center" : "right")}\">{(textmodel.Bold ? "<b>" : "")}{(textmodel.Italic ? "<i>" : "")}{(textmodel.Underlined ? "<u>" : "")}{(textmodel.Strikedthrough ? "<s>" : "")}{textmodel.Text}{(textmodel.Bold ? "</b>" : "")}{(textmodel.Italic ? "</i>" : "")}{(textmodel.Underlined ? "</u>" : "")}{(textmodel.Strikedthrough ? "</s>" : "")}</p>";
-                    template = template.Replace($"[**{i}**]", html);
-                }
-                for (int i = AllTextModels.Count; i < AllImageModels.Count + AllTextModels.Count; i++)
-                {
-                    var imagemodel = AllImageModels[i - AllTextModels.Count];
-                    string html = $"<img src=\"{(imagemodel.FileUri == null || imagemodel.FileUri == string.Empty ? "" : IMAGE_BASE_URL + imagemodel.FileUri)}\" alt=\"{imagemodel.Alt}\" style=\"float:{(imagemodel.FloatSet == "0" ? "none" : imagemodel.FloatSet)}; opacity:{imagemodel.Opacity.ToString().Replace(",", ".")}; width:{imagemodel.Width}%; height:{imagemodel.Height}px; padding:{imagemodel.Padding}px; border;{imagemodel.Border}px solid black; object-fit:{(imagemodel.ObjectFitSet == "0" ? "cover" : imagemodel.ObjectFitSet)};\"/>";
-                    template = template.Replace($"[**{i}**]", html);
-                }
-
                 if (IsCV)
                 {
+                    List<TextModel> AllTextModels = Database.GetAllTextModelsByUsername(user.UserName, "Cv");
+                    List<ImageModel> AllImageModels = Database.GetAllImageModelsByUsername(user.UserName, "Cv");
+                    string template = System.IO.File.ReadAllText(@"Templates\cv_template.html");
+
+#if DEBUG
+                    template = template.Replace("[**CSS**]", $"<link rel=\"stylesheet\" href=\"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\temp\\websites\\css\\cv.css\" /> <link rel=\"Stylesheet\" href=\"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\temp\\websites\\css\\all.min.css\">");
+#else
+                    template = template.Replace("[**CSS**]", "");
+#endif
+
+                    for (int i = 0; i < AllTextModels.Count; i++)
+                    {
+                        var textmodel = AllTextModels[i];
+                        string html = $"<p style=\"{(textmodel.TextColor != null ? $"color :{textmodel.TextColor};" : string.Empty)} {(textmodel.BackgroundColor != null ? $"background-color :{textmodel.BackgroundColor};" : string.Empty)} font-size:{textmodel.FontSize}rem; text-align:{(textmodel.TextAllignment == "0" ? "left;" : textmodel.TextAllignment == "1" ? "center;" : "right;")} {(textmodel.Shadow ? $"text-shadow: 1px 1px 5px {(textmodel.TextColor != string.Empty ? textmodel.TextColor : "#000000")};" : string.Empty)} {(textmodel.FontWeight != 0 ? $"font-weight:{textmodel.FontWeight};" : string.Empty)} {(textmodel.Font != string.Empty && textmodel.Font != null ? $"font-family:'{textmodel.Font}', sans-serif;" : string.Empty)}\">{(textmodel.Bold ? "<b>" : string.Empty)}{(textmodel.Italic ? "<i>" : string.Empty)}{(textmodel.Underlined ? "<u>" : string.Empty)}{(textmodel.Strikedthrough ? "<s>" : string.Empty)}{textmodel.Text}{(textmodel.Bold ? "</b>" : string.Empty)}{(textmodel.Italic ? "</i>" : string.Empty)}{(textmodel.Underlined ? "</u>" : string.Empty)}{(textmodel.Strikedthrough ? "</s>" : string.Empty)}</p>";
+                        template = template.Replace($"[**{i}**]", html);
+                    }
+                    for (int i = AllTextModels.Count; i < AllImageModels.Count + AllTextModels.Count; i++)
+                    {
+                        var imagemodel = AllImageModels[i - AllTextModels.Count];
+                        string html = $"<img src=\"{(imagemodel.FileUri == null || imagemodel.FileUri == string.Empty ? "" : IMAGE_BASE_URL + imagemodel.FileUri)}\" alt=\"{imagemodel.Alt}\" style=\"float:{(imagemodel.FloatSet == "0" ? "none" : imagemodel.FloatSet)}; opacity:{imagemodel.Opacity.ToString().Replace(",", ".")}; width:{imagemodel.Width}%; height:{imagemodel.Height}px; padding:{imagemodel.Padding}px; border;{imagemodel.Border}px solid black; object-fit:{(imagemodel.ObjectFitSet == "0" ? "cover" : imagemodel.ObjectFitSet)};\"/>";
+                        template = template.Replace($"[**{i}**]", html);
+                    }
+
                     System.IO.File.WriteAllText(Path.Combine(userProfile.IndexCvDirectory, "index.html"), template);
                     userProfile.HasCv = IsCV;
                 }
                 else
                 {
+                    List<TextModel> AllTextModels = Database.GetAllTextModelsByUsername(user.UserName, "Portfolio");
+                    List<ImageModel> AllImageModels = Database.GetAllImageModelsByUsername(user.UserName, "Portfolio");
+                    string template = System.IO.File.ReadAllText(@"Templates\portfolio_template.html");
+
+                    for (int i = 0; i < AllTextModels.Count; i++)
+                    {
+                        var textmodel = AllTextModels[i];
+                        string html = $"style=\"{(textmodel.TextColor != null ? $"color :{textmodel.TextColor};" : string.Empty)} {(textmodel.BackgroundColor != null ? $"background-color :{textmodel.BackgroundColor};" : string.Empty)} font-size:{textmodel.FontSize}rem; text-align:{(textmodel.TextAllignment == "0" ? "left;" : textmodel.TextAllignment == "1" ? "center;" : "right;")} {(textmodel.Shadow ? $"text-shadow: 1px 1px 5px {(textmodel.TextColor != string.Empty ? textmodel.TextColor : "#000000")};" : string.Empty)} {(textmodel.FontWeight != 0 ? $"font-weight:{textmodel.FontWeight};" : string.Empty)} {(textmodel.Font != string.Empty && textmodel.Font != null ? $"font-family:'{textmodel.Font}', sans-serif;" : string.Empty)}\">{(textmodel.Bold ? "<b>" : string.Empty)}{(textmodel.Italic ? "<i>" : string.Empty)}{(textmodel.Underlined ? "<u>" : string.Empty)}{(textmodel.Strikedthrough ? "<s>" : string.Empty)}{textmodel.Text}{(textmodel.Bold ? "</b>" : string.Empty)}{(textmodel.Italic ? "</i>" : string.Empty)}{(textmodel.Underlined ? "</u>" : string.Empty)}{(textmodel.Strikedthrough ? "</s>" : string.Empty)}";
+                        template = template.Replace($"[**{i}**]", html);
+                    }
+                    for (int i = AllTextModels.Count; i < AllImageModels.Count + AllTextModels.Count; i++)
+                    {
+                        var imagemodel = AllImageModels[i - AllTextModels.Count];
+                        string html = $"<img src=\"{(imagemodel.FileUri == null || imagemodel.FileUri == string.Empty ? "" : IMAGE_BASE_URL + imagemodel.FileUri)}\" alt=\"{imagemodel.Alt}\" style=\"float:{(imagemodel.FloatSet == "0" ? "none" : imagemodel.FloatSet)}; opacity:{imagemodel.Opacity.ToString().Replace(",", ".")}; width:{imagemodel.Width}%; height:{imagemodel.Height}px; padding:{imagemodel.Padding}px; border;{imagemodel.Border}px solid black; object-fit:{(imagemodel.ObjectFitSet == "0" ? "cover" : imagemodel.ObjectFitSet)};\"/>";
+                        template = template.Replace($"[**{i}**]", html);
+                    }
+
                     System.IO.File.WriteAllText(Path.Combine(userProfile.IndexPortfolioDirectory, "index.html"), template);
                     userProfile.HasPortfolio = !IsCV;
                 }

@@ -72,7 +72,7 @@ namespace BramrApi.Controllers
                         // get profile
                         var profile = Database.GetModelByIdentity<UserProfile>(user.Id);
 
-                        return ApiResponse.Oke("Sucess")
+                        return ApiResponse.Oke("Success")
                                 .AddData("jwt_token", token)
                                 .AddData("username", profile.UserName);
                     }
