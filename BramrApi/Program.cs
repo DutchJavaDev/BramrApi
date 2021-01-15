@@ -15,6 +15,7 @@ namespace BramrApi
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    // Sentry for error reports
                     webBuilder.UseSentry(options => {
 
 #if DEBUG
