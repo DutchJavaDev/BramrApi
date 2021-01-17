@@ -30,13 +30,6 @@ namespace BramrApi.Service
             if (!Directory.Exists(WEBSITES_DIRECTORY))
             {
                 Directory.CreateDirectory(WEBSITES_DIRECTORY);
-                string CSS_DIRECTORY = Path.Combine(WEBSITES_DIRECTORY, "css");
-                Directory.CreateDirectory(CSS_DIRECTORY);
-
-                string cv_css = File.ReadAllText(@"Templates\CSS\StylesheetCV-Beter.css");
-                string extra_css = File.ReadAllText(@"Templates\CSS\all.min.css");
-                File.WriteAllText(Path.Combine(CSS_DIRECTORY, "cv.css"), cv_css);
-                File.WriteAllText(Path.Combine(CSS_DIRECTORY, "all.min.css"), extra_css);
             }
 
             DEFAULT_INDEX_CONTENT = File.ReadAllText(DEFAULT_INDEX_PATH);
