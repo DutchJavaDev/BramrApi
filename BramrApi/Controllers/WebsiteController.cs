@@ -154,7 +154,7 @@ namespace BramrApi.Controllers
                     });
                 }
 
-                return await CreateHTML(user, IsCV);
+                return await CreateHTML(user, IsCV, AllModels);
             }
             catch (Exception e)
             {
@@ -163,7 +163,7 @@ namespace BramrApi.Controllers
         }
 
         [NonAction]
-        private async Task<ApiResponse> CreateHTML(IdentityUser user, bool IsCV)
+        private async Task<ApiResponse> CreateHTML(IdentityUser user, bool IsCV, List<object> AllModels)
         {
             try
             {
@@ -173,12 +173,6 @@ namespace BramrApi.Controllers
                     List<TextModel> AllTextModels = Database.GetAllTextModelsByUsername(user.UserName, "Cv");
                     List<ImageModel> AllImageModels = Database.GetAllImageModelsByUsername(user.UserName, "Cv");
                     string template = System.IO.File.ReadAllText(@"Templates\cv_template.html");
-
-#if DEBUG
-                    template = template.Replace("[**CSS**]", $"<link rel=\"stylesheet\" href=\"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\temp\\websites\\css\\cv.css\" /> <link rel=\"Stylesheet\" href=\"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\temp\\websites\\css\\all.min.css\">");
-#else
-                    template = template.Replace("[**CSS**]", "");
-#endif
 
                     for (int i = 0; i < AllTextModels.Count; i++)
                     {
@@ -191,6 +185,11 @@ namespace BramrApi.Controllers
                         var imagemodel = AllImageModels[i - AllTextModels.Count];
                         string html = $"<img src=\"{(imagemodel.FileUri == null || imagemodel.FileUri == string.Empty ? "" : IMAGE_BASE_URL + imagemodel.FileUri)}\" alt=\"{imagemodel.Alt}\" style=\"float:{(imagemodel.FloatSet == "0" ? "none" : imagemodel.FloatSet)}; opacity:{imagemodel.Opacity.ToString().Replace(",", ".")}; width:{imagemodel.Width}%; height:{imagemodel.Height}px; padding:{imagemodel.Padding}px; border;{imagemodel.Border}px solid black; object-fit:{(imagemodel.ObjectFitSet == "0" ? "cover" : imagemodel.ObjectFitSet)};\"/>";
                         template = template.Replace($"[**{i}**]", html);
+                    }
+                    for (int i = AllImageModels.Count + AllTextModels.Count; i < AllModels.Count; i++)
+                    {
+                        var skillamount = AllModels[i];
+                        template = template.Replace($"[**{i}**]", skillamount.ToString());
                     }
 
                     System.IO.File.WriteAllText(Path.Combine(userProfile.IndexCvDirectory, "index.html"), template);
@@ -206,7 +205,7 @@ namespace BramrApi.Controllers
                     {
                         var textmodel = AllTextModels[i];
                         string html = $"style=\"{(textmodel.TextColor != null ? $"color :{textmodel.TextColor};" : string.Empty)} {(textmodel.BackgroundColor != null ? $"background-color :{textmodel.BackgroundColor};" : string.Empty)} font-size:{textmodel.FontSize}rem; text-align:{(textmodel.TextAllignment == "0" ? "left;" : textmodel.TextAllignment == "1" ? "center;" : "right;")} {(textmodel.Shadow ? $"text-shadow: 1px 1px 5px {(textmodel.TextColor != string.Empty ? textmodel.TextColor : "#000000")};" : string.Empty)} {(textmodel.FontWeight != 0 ? $"font-weight:{textmodel.FontWeight};" : string.Empty)} {(textmodel.Font != string.Empty && textmodel.Font != null ? $"font-family:'{textmodel.Font}', sans-serif;" : string.Empty)}\">{(textmodel.Bold ? "<b>" : string.Empty)}{(textmodel.Italic ? "<i>" : string.Empty)}{(textmodel.Underlined ? "<u>" : string.Empty)}{(textmodel.Strikedthrough ? "<s>" : string.Empty)}{textmodel.Text}{(textmodel.Bold ? "</b>" : string.Empty)}{(textmodel.Italic ? "</i>" : string.Empty)}{(textmodel.Underlined ? "</u>" : string.Empty)}{(textmodel.Strikedthrough ? "</s>" : string.Empty)}";
-                        template = template.Replace($"[**{i}**]", html);
+                        template = template.Replace($"[**{i}**]", html).Replace($"[**{i}-2**]", textmodel.Text);
                     }
                     for (int i = AllTextModels.Count; i < AllImageModels.Count + AllTextModels.Count; i++)
                     {
