@@ -213,6 +213,7 @@ namespace BramrApi.Controllers
                         string html = $"<img src=\"{(imagemodel.FileUri == null || imagemodel.FileUri == string.Empty ? "" : IMAGE_BASE_URL + imagemodel.FileUri)}\" alt=\"{imagemodel.Alt}\" style=\"float:{(imagemodel.FloatSet == "0" ? "none" : imagemodel.FloatSet)}; opacity:{imagemodel.Opacity.ToString().Replace(",", ".")}; width:{imagemodel.Width}%; height:{imagemodel.Height}px; padding:{imagemodel.Padding}px; border;{imagemodel.Border}px solid black; object-fit:{(imagemodel.ObjectFitSet == "0" ? "cover" : imagemodel.ObjectFitSet)};\"/>";
                         template = template.Replace($"[**{i}**]", html);
                     }
+                    template = template.Replace($"[**28**]", user.UserName);
 
                     System.IO.File.WriteAllText(Path.Combine(userProfile.IndexPortfolioDirectory, "index.html"), template);
                     userProfile.HasPortfolio = !IsCV;
