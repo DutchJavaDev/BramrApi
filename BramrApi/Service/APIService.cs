@@ -27,9 +27,6 @@ namespace BramrApi.Service
         
         public APIService()
         {
-#if !DEBUG
-            Directory.SetCurrentDirectory(@"\");
-#endif
             if (!Directory.Exists(WEBSITES_DIRECTORY))
             {
                 Directory.CreateDirectory(WEBSITES_DIRECTORY);

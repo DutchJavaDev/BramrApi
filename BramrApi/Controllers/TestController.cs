@@ -22,7 +22,7 @@ namespace BramrApi.Controllers
         [HttpGet]
         public string Index()
         {
-            return "Hello Api :)";
+            return System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Hello.world");
         }
 
 
