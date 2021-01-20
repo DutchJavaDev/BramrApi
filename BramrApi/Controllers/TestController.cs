@@ -20,7 +20,10 @@ namespace BramrApi.Controllers
         }
 
         [HttpGet]
-        public string Index() => "Hello Api :)";
+        public string Index()
+        {
+            return "Hello Api :)";
+        }
 
 
         [HttpGet("cv/{username}")]

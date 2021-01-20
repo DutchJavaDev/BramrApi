@@ -67,7 +67,6 @@ namespace BramrApi.Controllers
                 // Check if there is a identity user with this email
                 if (await UserManager.FindByEmailAsync(model.Email) != null)
                 {
-
                     // There is, goodbeye 👋
                     return ApiResponse.Error("This email has already been taken"); 
                 }
@@ -115,7 +114,7 @@ namespace BramrApi.Controllers
                         #region QRCode black magic by Mathijs
                         QrCodeGenerator qrGen = new QrCodeGenerator();
 
-                        qrGen.CreateQR($"https://bramr.tech/api/test/cv/{model.UserName}", model.UserName); //api url is temp
+                        qrGen.CreateQR($"https://bramr.tech/api/cv/{model.UserName}", model.UserName); //api url is temp
 
                         MailClient.SendPasswordEmail(model.Email, password, model.UserName);
 #if DEBUG
@@ -160,6 +159,22 @@ namespace BramrApi.Controllers
         {
             if (user == null) return;
 
+            var profile = Database.GetModelByUserName(user.UserName);
+
+            if (profile != null)
+            {
+                try
+                {
+                    io.Directory.Delete(profile.WebsiteDirectory);
+                }
+                catch (Exception e)
+                {
+                    Sentry.SentrySdk.CaptureException(e);
+                }
+
+                await Database.DeleteModel(profile);
+            }
+
             var result = await UserManager.DeleteAsync(user);
 
             if (!result.Succeeded)
@@ -173,7 +188,7 @@ namespace BramrApi.Controllers
                     builder.AppendLine($"[{error.Code}] '{error.Description}'");
                 }
 
-                Sentry.SentrySdk.CaptureMessage($"Identity [DeleteAccount] errors {Environment.NewLine}", Sentry.Protocol.SentryLevel.Warning);
+                Sentry.SentrySdk.CaptureMessage($"Identity [DeleteAccount] errors {builder}", Sentry.Protocol.SentryLevel.Warning);
             }
         }
 

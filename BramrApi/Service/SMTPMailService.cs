@@ -10,7 +10,7 @@ namespace BramrApi.Service
 {
     public class SMTPMailService : ISMTP
     {
-        MailGenerator mailGen = new MailGenerator();
+        readonly MailGenerator mailGen = new MailGenerator();
         public void SendPasswordEmail(string email, string password, string username)
         {
             try
@@ -30,24 +30,26 @@ namespace BramrApi.Service
             }
             catch (Exception e)
             {
-                
+                Sentry.SentrySdk.CaptureException(e);
             }
         }
         public void SendPasswordChangedEmail(string email, string username)
         {
             try
             {
-                MailMessage mail = new MailMessage();
-                mail.IsBodyHtml = true;
-                mail.From = new MailAddress("bramrinfo@gmail.com");
+                MailMessage mail = new MailMessage
+                {
+                    IsBodyHtml = true,
+                    From = new MailAddress("bramrinfo@gmail.com")
+                };
                 mail.To.Add(email);
                 mail.Subject = "Your Bramr password has been changed";
                 mail.Body = mailGen.GeneratePasswordChangedMail(username).Result;
                 CreateClient().Send(mail);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-               
+                Sentry.SentrySdk.CaptureException(e);
             }
         }
         public void SendPasswordForgottenEmail(string email, string username, string token)
@@ -70,24 +72,26 @@ namespace BramrApi.Service
             }
             catch (Exception e)
             {
-
+                Sentry.SentrySdk.CaptureException(e);
             }
         }
         public void SendContactMail(string recipientEmail, string recipientName, string sendersName, string sendersEmail, string message, string service)
         {
             try
             {
-                MailMessage mail = new MailMessage();
-                mail.IsBodyHtml = true;
-                mail.From = new MailAddress("bramrinfo@gmail.com");
+                MailMessage mail = new MailMessage
+                {
+                    IsBodyHtml = true,
+                    From = new MailAddress("bramrinfo@gmail.com")
+                };
                 mail.To.Add(recipientEmail);
                 mail.Subject = $@"{sendersName} has contacten you through Bramr.";
                 mail.Body = mailGen.GenerateContactMail(recipientName, sendersName, sendersEmail, message).Result;
                 CreateClient().Send(mail);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                Sentry.SentrySdk.CaptureException(e);
             }
         }
         private SmtpClient CreateClient()
@@ -100,8 +104,10 @@ namespace BramrApi.Service
 
         private MailMessage GetMailWithImg(string email, string password,string username, LinkedResource res)
         {
-            MailMessage mail = new MailMessage();
-            mail.IsBodyHtml = true;
+            MailMessage mail = new MailMessage
+            {
+                IsBodyHtml = true
+            };
             mail.AlternateViews.Add(GetEmbeddedImage(password, username,res).Result);
             mail.From = new MailAddress("bramrinfo@gmail.com");
             mail.To.Add(email);
