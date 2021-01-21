@@ -25,7 +25,14 @@ namespace BramrApi.Controllers
         {
             var res = await command.Test();
 
-            return $"{io.Path.IsPathFullyQualified(res)} || {res}";
+            try
+            {
+                return await io.File.ReadAllTextAsync(res);
+            }
+            catch (System.Exception e)
+            {
+                return e.Message;
+            }
         }
 
 
