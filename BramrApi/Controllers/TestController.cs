@@ -20,9 +20,9 @@ namespace BramrApi.Controllers
         }
 
         [HttpGet]
-        public string Index()
+        public async Task<string> Index()
         {
-            return System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Hello.world");
+            return await command.Test();
         }
 
 

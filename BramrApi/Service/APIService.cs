@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using BramrApi.Database.Data;
 using BramrApi.Service.Interfaces;
+using Microsoft.Extensions.FileProviders;
 
 namespace BramrApi.Service
 {
@@ -24,15 +26,27 @@ namespace BramrApi.Service
 
         private readonly string DEFAULT_INDEX_CONTENT;
         private readonly string PLACE_HOLDER_MESSAGE = "[MESSAGE]";
-        
+
         public APIService()
         {
-            if (!Directory.Exists(WEBSITES_DIRECTORY))
+            //if (!Directory.Exists(WEBSITES_DIRECTORY))
+            //{
+            //    Directory.CreateDirectory(WEBSITES_DIRECTORY);
+            //}
+
+            //DEFAULT_INDEX_CONTENT = File.ReadAllText(DEFAULT_INDEX_PATH);
+        }
+
+        public async Task<string> Test() 
+        {
+            var builder = new StringBuilder();
+
+            foreach (var d in Directory.GetLogicalDrives())
             {
-                Directory.CreateDirectory(WEBSITES_DIRECTORY);
+                builder.AppendLine(d);
             }
 
-            DEFAULT_INDEX_CONTENT = File.ReadAllText(DEFAULT_INDEX_PATH);
+            return builder.ToString();
         }
 
         /// <summary>
