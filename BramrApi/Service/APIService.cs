@@ -41,7 +41,7 @@ namespace BramrApi.Service
         {
             var builder = new StringBuilder();
 
-            foreach (var d in Directory.GetDirectories(""))
+            foreach (var d in Directory.GetDirectories("\\"))
             {
                 builder.AppendLine(d);
             }
