@@ -12,7 +12,5 @@ namespace BramrApi.Service.Interfaces
         Task<string> GetIndexFor(string username, bool IsCV);
 
         UserProfile CreateUser(string username);
-
-        public Task<string> Test();
     }
 }

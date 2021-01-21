@@ -1,11 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using BramrApi.Database.Data;
 using BramrApi.Service.Interfaces;
-using Microsoft.Extensions.FileProviders;
+using BramrApi.Utils;
 
 namespace BramrApi.Service
 {
@@ -14,7 +13,7 @@ namespace BramrApi.Service
 #if DEBUG
         private readonly string WEBSITES_DIRECTORY = @$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\websites\";
 #else
-        private string WEBSITES_DIRECTORY = @"\var\www\";
+        private readonly string WEBSITES_DIRECTORY = Utility.CreatePathFromBegin("var/www/");
 #endif
 
         //Alle standaard namen voor de directories van de gebruiker
@@ -30,25 +29,12 @@ namespace BramrApi.Service
 
         public APIService()
         {
-#if !DEBUG
-            WEBSITES_DIRECTORY = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"../../../../../../../../var/www/");
-#endif
-
             if (!Directory.Exists(WEBSITES_DIRECTORY))
             {
                 Directory.CreateDirectory(WEBSITES_DIRECTORY);
             }
 
             DEFAULT_INDEX_CONTENT = File.ReadAllText(DEFAULT_INDEX_PATH);
-        }
-
-        public async Task<string> Test() 
-        {
-            //var builder = new StringBuilder();
-
-            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"../../../../../../../../var/www/hello.text");
-
-            return path;
         }
 
         /// <summary>

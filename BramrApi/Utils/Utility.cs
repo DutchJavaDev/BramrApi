@@ -1,4 +1,6 @@
-﻿using System;
+﻿using System.IO;
+using System;
+using System.Reflection;
 
 namespace BramrApi.Utils
 {
@@ -6,8 +8,12 @@ namespace BramrApi.Utils
     {
         public static string CreateFileUri()
         {
-            string Uri = Guid.NewGuid().ToString().Replace("-", "");
-            return Uri;
+            return Guid.NewGuid().ToString().Replace("-", "");
+        }
+
+        public static string CreatePathFromBegin(string destination)
+        {
+            return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @$"../../../../../../../../{destination}");
         }
     }
 }

@@ -21,18 +21,9 @@ namespace BramrApi.Controllers
         }
 
         [HttpGet]
-        public async Task<string> Index()
+        public string Index()
         {
-            var res = await command.Test();
-
-            try
-            {
-                return await io.File.ReadAllTextAsync(res);
-            }
-            catch (System.Exception e)
-            {
-                return e.Message;
-            }
+            return "Hello from the api :-), now fuckoff.";
         }
 
 

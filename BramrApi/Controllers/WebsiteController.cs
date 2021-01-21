@@ -12,6 +12,7 @@ using System.Text;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using BramrApi.Database.Data;
+using BramrApi.Utils;
 using System;
 using io = System.IO;
 
@@ -73,7 +74,8 @@ namespace BramrApi.Controllers
 #if DEBUG
                 var html = await io.File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\ContactFormResponse.html");
 #else
-                var html = await io.File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\ContactFormResponse.html");
+                //var html = await io.File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\ContactFormResponse.html");
+                var html = await io.File.ReadAllTextAsync(Utility.CreatePathFromBegin($@"usr/share/temp/ContactFormResponse.html"));
 #endif
                 if (user != null)
                 {
@@ -172,7 +174,7 @@ namespace BramrApi.Controllers
                 {
                     List<TextModel> AllTextModels = Database.GetAllTextModelsByUsername(user.UserName, "Cv");
                     List<ImageModel> AllImageModels = Database.GetAllImageModelsByUsername(user.UserName, "Cv");
-                    string template = System.IO.File.ReadAllText(@"Templates\cv_template.html");
+                    string template = System.IO.File.ReadAllText(@"Templates/cv_template.html");
 
                     for (int i = 0; i < AllTextModels.Count; i++)
                     {
@@ -199,7 +201,7 @@ namespace BramrApi.Controllers
                 {
                     List<TextModel> AllTextModels = Database.GetAllTextModelsByUsername(user.UserName, "Portfolio");
                     List<ImageModel> AllImageModels = Database.GetAllImageModelsByUsername(user.UserName, "Portfolio");
-                    string template = System.IO.File.ReadAllText(@"Templates\portfolio_template.html");
+                    string template = System.IO.File.ReadAllText(@"Templates/portfolio_template.html");
 
                     for (int i = 0; i < AllTextModels.Count; i++)
                     {
