@@ -45,7 +45,7 @@ namespace BramrApi.Service
 
             foreach (var d in provider.GetDirectoryContents(""))
             {
-                builder.AppendLine(d);
+                builder.AppendLine(d.PhysicalPath);
             }
 
             return builder.ToString();
