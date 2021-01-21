@@ -14,7 +14,7 @@ namespace BramrApi.Service
 #if DEBUG
         private readonly string WEBSITES_DIRECTORY = @$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\websites\";
 #else
-        private readonly string WEBSITES_DIRECTORY = @"\var\www\";
+        private string WEBSITES_DIRECTORY = @"\var\www\";
 #endif
 
         //Alle standaard namen voor de directories van de gebruiker
@@ -30,12 +30,16 @@ namespace BramrApi.Service
 
         public APIService()
         {
-            //if (!Directory.Exists(WEBSITES_DIRECTORY))
-            //{
-            //    Directory.CreateDirectory(WEBSITES_DIRECTORY);
-            //}
+#if !DEBUG
+            WEBSITES_DIRECTORY = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"/var/www/");
+#endif
 
-            //DEFAULT_INDEX_CONTENT = File.ReadAllText(DEFAULT_INDEX_PATH);
+            if (!Directory.Exists(WEBSITES_DIRECTORY))
+            {
+                Directory.CreateDirectory(WEBSITES_DIRECTORY);
+            }
+
+            DEFAULT_INDEX_CONTENT = File.ReadAllText(DEFAULT_INDEX_PATH);
         }
 
         public async Task<string> Test() 
