@@ -18,7 +18,7 @@ namespace BramrApi.Service
 #endif
 
         //Alle standaard namen voor de directories van de gebruiker
-        private readonly string DEFAULT_INDEX_PATH = @"Static\default.html";
+        private readonly string DEFAULT_INDEX_PATH = @"Static/default.html";
         private readonly string INDEX_FILE_NAME = "index.html";
         private readonly string CV_DIRECTORY = "cv";
         private readonly string PORTFOLIO_DIRECTORY = "portfolio";
@@ -31,7 +31,7 @@ namespace BramrApi.Service
         public APIService()
         {
 #if !DEBUG
-            WEBSITES_DIRECTORY = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"/var/www/");
+            WEBSITES_DIRECTORY = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"../../../../../../../../var/www/");
 #endif
 
             if (!Directory.Exists(WEBSITES_DIRECTORY))
