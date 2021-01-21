@@ -174,7 +174,7 @@ namespace BramrApi.Controllers
 
                 await Database.DeleteModel(profile);
             }
-
+            
             var result = await UserManager.DeleteAsync(user);
 
             if (!result.Succeeded)

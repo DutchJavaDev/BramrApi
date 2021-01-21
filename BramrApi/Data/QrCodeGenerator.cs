@@ -1,11 +1,9 @@
 ﻿using QRCoder;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using BramrApi.Utils;
 using static QRCoder.PayloadGenerator;
 
 namespace BramrApi.Data
@@ -29,12 +27,15 @@ namespace BramrApi.Data
 
             bitmap.Save($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\{filename}.jpeg", ImageFormat.Jpeg);
 #else
-            if (!Directory.Exists(@$"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\"))
+            var path = Utility.CreatePathFromBegin(@$"usr/share/temp");
+
+            if (!Directory.Exists(path))
             {
-                Directory.CreateDirectory(@$"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\");
+                Directory.CreateDirectory(path);
             }
 
-            bitmap.Save($@"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\{filename}.jpeg", ImageFormat.Jpeg);
+            //bitmap.Save($@"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\{filename}.jpeg", ImageFormat.Jpeg);
+            bitmap.Save($@"{Utility.CreatePathFromBegin(@$"{path}/{filename}.jpeg")}", ImageFormat.Jpeg);
 #endif
 
             //var image = BitMapToBytes(bitmap);
