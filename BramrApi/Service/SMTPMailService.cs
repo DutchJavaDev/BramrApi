@@ -5,6 +5,7 @@ using System.Net.Mail;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using BramrApi.Data;
+using BramrApi.Utils;
 
 namespace BramrApi.Service
 {
@@ -19,7 +20,8 @@ namespace BramrApi.Service
                 using (LinkedResource res = new LinkedResource($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\{username}.jpeg", new ContentType("image/jpeg")))
                 
 #else
-                using (LinkedResource res = new LinkedResource($@"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\{username}.jpeg", new ContentType("image/jpeg")))
+                var path = Utility.CreatePathFromBegin(@$"usr/share/temp/{username}.jpeg");
+                using (LinkedResource res = new LinkedResource(path, new ContentType("image/jpeg")))
 #endif
                 {
                     MailMessage mailWithImg = GetMailWithImg(email, password, username, res);
