@@ -41,7 +41,9 @@ namespace BramrApi.Service
         {
             var builder = new StringBuilder();
 
-            foreach (var d in Directory.GetDirectories("\\"))
+            var provider = new PhysicalFileProvider("/");
+
+            foreach (var d in provider.GetDirectoryContents(""))
             {
                 builder.AppendLine(d);
             }
