@@ -42,7 +42,7 @@ namespace BramrApi.Service
         {
             //var builder = new StringBuilder();
 
-            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"\");
+            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"..\..\..\..\..\..\..\..\var\www");
 
             return path;
         }
