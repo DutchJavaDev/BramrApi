@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
+using io = System.IO;
 
 namespace BramrApi.Controllers
 {
@@ -22,7 +23,9 @@ namespace BramrApi.Controllers
         [HttpGet]
         public async Task<string> Index()
         {
-            return await command.Test();
+            var res = await command.Test();
+
+            return $"{io.Path.IsPathFullyQualified(res)} || {res}";
         }
 
 

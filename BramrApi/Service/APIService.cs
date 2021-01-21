@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using BramrApi.Database.Data;
@@ -39,16 +40,11 @@ namespace BramrApi.Service
 
         public async Task<string> Test() 
         {
-            var builder = new StringBuilder();
+            //var builder = new StringBuilder();
 
-            var provider = new PhysicalFileProvider("/");
+            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"\");
 
-            foreach (var d in provider.GetDirectoryContents(""))
-            {
-                builder.AppendLine(d.PhysicalPath);
-            }
-
-            return builder.ToString();
+            return path;
         }
 
         /// <summary>
