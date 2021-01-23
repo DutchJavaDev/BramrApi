@@ -98,7 +98,7 @@ namespace BramrApi.Service
         }
         private SmtpClient CreateClient()
         {
-            var client = new SmtpClient("smtp.gmail.com", 587);
+            var client = new SmtpClient("smtp.gmail.com", 465);
             client.DeliveryMethod = SmtpDeliveryMethod.Network;
             client.UseDefaultCredentials = false;
             client.EnableSsl = true;
