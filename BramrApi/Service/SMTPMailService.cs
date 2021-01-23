@@ -28,7 +28,7 @@ namespace BramrApi.Service
                     CreateClient().Send(mailWithImg);
                     res.Dispose();
                 }
-                
+
             }
             catch (Exception e)
             {
@@ -97,35 +97,38 @@ namespace BramrApi.Service
             }
         }
         private SmtpClient CreateClient()
-            {
-                return new SmtpClient("smtp.gmail.com", 587) {
-                    Credentials = new NetworkCredential("bramrinfo@gmail.com", "4*zhKqq6=Z9-#A=%"),
-                    EnableSsl = true
-                };
-            }
+        {
+            var client = new SmtpClient("smtp.gmail.com", 587);
 
-        private MailMessage GetMailWithImg(string email, string password,string username, LinkedResource res)
+            client.UseDefaultCredentials = false;
+            client.Credentials = new NetworkCredential("bramrinfo@gmail.com", "4*zhKqq6=Z9-#A=%");
+            client.EnableSsl = true;
+
+            return client;
+        }
+
+        private MailMessage GetMailWithImg(string email, string password, string username, LinkedResource res)
         {
             MailMessage mail = new MailMessage
             {
                 IsBodyHtml = true
             };
-            mail.AlternateViews.Add(GetEmbeddedImage(password, username,res).Result);
+            mail.AlternateViews.Add(GetEmbeddedImage(password, username, res).Result);
             mail.From = new MailAddress("bramrinfo@gmail.com");
             mail.To.Add(email);
             mail.Subject = "Registration on Bramr!";
             return mail;
         }
 
-        
+
 
         private async Task<AlternateView> GetEmbeddedImage(string password, string username, LinkedResource res)
         {
             res.ContentId = Guid.NewGuid().ToString();
-            var htmlBody = await mailGen.GenerateRegistrationMail(username,password, @"<img src='cid:" + res.ContentId + @"'/>") ;
+            var htmlBody = await mailGen.GenerateRegistrationMail(username, password, @"<img src='cid:" + res.ContentId + @"'/>");
             AlternateView alternateView = AlternateView.CreateAlternateViewFromString(htmlBody, null, MediaTypeNames.Text.Html);
             alternateView.LinkedResources.Add(res);
-            
+
             return alternateView;
         }
     }
