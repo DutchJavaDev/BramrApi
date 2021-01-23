@@ -19,7 +19,7 @@ namespace BramrApi.Service
 #if DEBUG
         private string ConnectionString = "server=localhost;port=3306;database=bramr_db;uid=bramr_db;password=";
 #else
-        private string ConnectionString = "server=localhost;port=3306;database=bramr_db;uid=dbuser;password=MQDB23@s34!";
+        private string ConnectionString = "server=localhost;port=3306;database=bramr_db;uid=root;password=MQDB23@sl34!";
 #endif
         public DatabaseService()
         {
