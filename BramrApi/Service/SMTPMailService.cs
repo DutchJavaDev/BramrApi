@@ -99,10 +99,10 @@ namespace BramrApi.Service
         private SmtpClient CreateClient()
         {
             var client = new SmtpClient("smtp.gmail.com", 587);
-
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
             client.UseDefaultCredentials = false;
-            client.Credentials = new NetworkCredential("bramrinfo@gmail.com", "4*zhKqq6=Z9-#A=%");
             client.EnableSsl = true;
+            client.Credentials = new NetworkCredential("bramrinfo@gmail.com", "4*zhKqq6=Z9-#A=%");
 
             return client;
         }
