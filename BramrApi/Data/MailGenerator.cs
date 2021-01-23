@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using BramrApi.Utils;
 namespace BramrApi.Data
 {
     public class MailGenerator
@@ -19,12 +20,18 @@ namespace BramrApi.Data
             var html = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate_Registration.html");
             var style = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate.css");
 #else
-            if (!Directory.Exists(@$"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\"))
+            var tempFolderLocation = Utility.CreatePathFromBegin("usr/share/temp");
+            if (!Directory.Exists(tempFolderLocation))
             {
-                Directory.CreateDirectory(@$"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\");
+                Directory.CreateDirectory(tempFolderLocation);
             } 
-            var html = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\MailTemplate_Registration.html");
-            var style = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\MailTemplate.css");
+            
+            //var html = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\MailTemplate_Registration.html");
+
+            var html = await File.ReadAllTextAsync(Utility.CreatePathFromBegin("usr/share/temp/MailTemplate_Registration.html"));
+
+            //var style = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)}\temp\MailTemplate.css");
+            var style = await File.ReadAllTextAsync(Utility.CreatePathFromBegin("usr/share/temp/MailTemplate.css"));
 #endif
 
             var bindings = new Dictionary<string, object>()
@@ -52,8 +59,10 @@ namespace BramrApi.Data
             var html = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate_PasswordRecovery.html");
             var style = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate.css");
 #else
-            var html = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate_PasswordRecovery.html");
-            var style = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate.css");
+            //var html = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate_PasswordRecovery.html");
+            var html = await File.ReadAllTextAsync(Utility.CreatePathFromBegin("usr/share/temp/MailTemplate_PasswordRecovery.html"));
+            //var style = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate.css");
+            var style = await File.ReadAllTextAsync(Utility.CreatePathFromBegin("usr/share/temp/MailTemplate.css"));
 #endif
             var bindings = new Dictionary<string, object>()
             {
@@ -79,8 +88,9 @@ namespace BramrApi.Data
             var html = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate_PasswordChanged.html");
             var style = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate.css");
 #else
-            var html = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate_PasswordChanged.html");
-            var style = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate.css");
+            //var html = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate_PasswordChanged.html");
+            var html = await File.ReadAllTextAsync(Utility.CreatePathFromBegin("usr/share/temp/MailTemplate_PasswordChanged.html"));
+            var style = await File.ReadAllTextAsync(Utility.CreatePathFromBegin("usr/share/temp/MailTemplate.css"));
 #endif
             var bindings = new Dictionary<string, object>()
             {
@@ -105,8 +115,9 @@ namespace BramrApi.Data
             var html = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate_Contact.html");
             var style = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate.css");
 #else
-            var html = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate_Contact.html");
-            var style = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate.css");
+            //var html = await File.ReadAllTextAsync(@$"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\MailTemplate_Contact.html");
+            var html = await File.ReadAllTextAsync(Utility.CreatePathFromBegin("usr/share/temp/MailTemplate_Contact.html"));
+            var style = await File.ReadAllTextAsync(Utility.CreatePathFromBegin("usr/share/temp/MailTemplate.css"));
 #endif
             var bindings = new Dictionary<string, object>()
             {
