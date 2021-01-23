@@ -102,7 +102,7 @@ namespace BramrApi.Service
 
             client.UseDefaultCredentials = false;
             client.Credentials = new NetworkCredential("bramrinfo@gmail.com", "4*zhKqq6=Z9-#A=%");
-            client.EnableSsl = true;
+            client.EnableSsl = false;
 
             return client;
         }
