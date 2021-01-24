@@ -42,8 +42,8 @@ namespace BramrApi.Controllers
                     UserInfo.Add($"https://localhost:44372/cv/{user.UserName}");
                     UserInfo.Add($"https://localhost:44372/portfolio/{user.UserName}");
 #else
-                    UserInfo.Add($"https://bramr.tech/cv/{user.UserName}");
-                    UserInfo.Add($"https://bramr.tech/portfolio/{user.UserName}");
+                    UserInfo.Add($"https://www.bramr.tech/cv/{user.UserName}");
+                    UserInfo.Add($"https://www.bramr.tech/portfolio/{user.UserName}");
 #endif
                     UserInfo.Add(user.Email);
                     UserInfo.Add(profile.HasCv.ToString());

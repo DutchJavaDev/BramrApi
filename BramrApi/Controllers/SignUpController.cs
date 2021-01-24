@@ -114,7 +114,7 @@ namespace BramrApi.Controllers
                         #region QRCode black magic by Mathijs
                         QrCodeGenerator qrGen = new QrCodeGenerator();
 
-                        qrGen.CreateQR($"https://bramr.tech/api/cv/{model.UserName}", model.UserName); //api url is temp
+                        qrGen.CreateQR($"https://www.bramr.tech/api/cv/{model.UserName}", model.UserName); //api url is temp
 
                         MailClient.SendPasswordEmail(model.Email, password, model.UserName);
 #if DEBUG

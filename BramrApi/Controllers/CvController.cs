@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BramrApi.Controllers
 {
-    [Route("[controller]")]
+    [Route("cv")]
     [ApiController]
     public class CvController : ControllerBase
     {

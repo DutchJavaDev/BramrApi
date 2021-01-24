@@ -28,7 +28,7 @@ namespace BramrApi.Controllers
 #if DEBUG
         private readonly string IMAGE_BASE_URL = @"https://localhost:44372/api/image/download/";
 #else
-        private readonly string IMAGE_BASE_URL = @"https://bramr.tech/api/image/download/";
+        private readonly string IMAGE_BASE_URL = @"https://www.bramr.tech/api/image/download/";
 #endif
 
         public WebsiteController(UserManager<IdentityUser> userManager, IDatabase database, ISMTP MailClient)
