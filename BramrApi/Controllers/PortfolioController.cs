@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BramrApi.Controllers
 {
-    [Route("portfolio")]
+    [Route("api/[controller]")]
     [ApiController]
     public class PortfolioController : ControllerBase
     {
