@@ -94,7 +94,8 @@ namespace BramrApi.Service
             try
             {
                 using var client = new SmtpClient();
-                await client.ConnectAsync("smtp.gmail.com", 465, true);
+                await client.ConnectAsync("smtp.gmail.com", 587);
+                client.AuthenticationMechanisms.Remove("XOAUTH2");
                 await client.AuthenticateAsync("bramrinfo@gmail.com", "4*zhKqq6=Z9-#A=%");
                 await client.SendAsync(email);
                 await client.DisconnectAsync(true);
