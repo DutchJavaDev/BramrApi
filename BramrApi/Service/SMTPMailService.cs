@@ -1,135 +1,136 @@
 ﻿using BramrApi.Service.Interfaces;
 using System;
-using System.Net;
-using System.Net.Mail;
-using System.Net.Mime;
+using MailKit.Net.Smtp;
+using MailKit;
+using MimeKit;
 using System.Threading.Tasks;
 using BramrApi.Data;
 using BramrApi.Utils;
+using MimeKit.Utils;
 
 namespace BramrApi.Service
 {
     public class SMTPMailService : ISMTP
     {
-        readonly MailGenerator mailGen = new MailGenerator();
-        public void SendPasswordEmail(string email, string password, string username)
+        private readonly MailGenerator mailGen = new MailGenerator();
+        private readonly MailboxAddress BRAMR_EMAIL = new MailboxAddress("Bramr hosting", "bramrinfo@gmail.com");
+
+        public async void SendPasswordEmail(string email, string password, string username)
         {
-            try
-            {
 #if DEBUG
-                using (LinkedResource res = new LinkedResource($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\{username}.jpeg", new ContentType("image/jpeg")))
-                
+            var message = await GetMailWithImg(email, password, username, $@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\temp\{username}.jpeg");
 #else
-                var path = Utility.CreatePathFromBegin(@$"usr/share/temp/{username}.jpeg");
-                using (LinkedResource res = new LinkedResource(path, new ContentType("image/jpeg")))
+            var message = await GetMailWithImg(email, password, username, Utility.CreatePathFromBegin(@$"usr/share/temp/{username}.jpeg"));
 #endif
-                {
-                    MailMessage mailWithImg = GetMailWithImg(email, password, username, res);
-                    CreateClient().Send(mailWithImg);
-                    res.Dispose();
-                }
-
-            }
-            catch (Exception e)
-            {
-                Sentry.SentrySdk.CaptureException(e);
-            }
-        }
-        public void SendPasswordChangedEmail(string email, string username)
-        {
-            try
-            {
-                MailMessage mail = new MailMessage
-                {
-                    IsBodyHtml = true,
-                    From = new MailAddress("bramrinfo@gmail.com")
-                };
-                mail.To.Add(email);
-                mail.Subject = "Your Bramr password has been changed";
-                mail.Body = mailGen.GeneratePasswordChangedMail(username).Result;
-                CreateClient().Send(mail);
-            }
-            catch (Exception e)
-            {
-                Sentry.SentrySdk.CaptureException(e);
-            }
-        }
-        public void SendPasswordForgottenEmail(string email, string username, string token)
-        {
-            try
-            {
-#if DEBUG
-                var link = $@"https://localhost:44309/password/recovery?Token={token}";
-#else
-                var link = @$"https://bramr.tech/password/recovery?Token={token}";
-#endif
-
-                MailMessage mail = new MailMessage();
-                mail.IsBodyHtml = true;
-                mail.From = new MailAddress("bramrinfo@gmail.com");
-                mail.To.Add(email);
-                mail.Subject = "Password recovery.";
-                mail.Body = mailGen.GeneratePasswordRecoveryMail(username, link).Result;
-                CreateClient().Send(mail);
-            }
-            catch (Exception e)
-            {
-                Sentry.SentrySdk.CaptureException(e);
-            }
-        }
-        public void SendContactMail(string recipientEmail, string recipientName, string sendersName, string sendersEmail, string message, string service)
-        {
-            try
-            {
-                MailMessage mail = new MailMessage
-                {
-                    IsBodyHtml = true,
-                    From = new MailAddress("bramrinfo@gmail.com")
-                };
-                mail.To.Add(recipientEmail);
-                mail.Subject = $@"{sendersName} has contacten you through Bramr.";
-                mail.Body = mailGen.GenerateContactMail(recipientName, sendersName, sendersEmail, message).Result;
-                CreateClient().Send(mail);
-            }
-            catch (Exception e)
-            {
-                Sentry.SentrySdk.CaptureException(e);
-            }
-        }
-        private SmtpClient CreateClient()
-        {
-            var client = new SmtpClient("smtp.gmail.com", 465);
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.UseDefaultCredentials = false;
-            client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("bramrinfo@gmail.com", "4*zhKqq6=Z9-#A=%");
-
-            return client;
+            SendEmail(message);
         }
 
-        private MailMessage GetMailWithImg(string email, string password, string username, LinkedResource res)
+        public async void SendPasswordChangedEmail(string email, string username)
         {
-            MailMessage mail = new MailMessage
+            var message = new MimeMessage();
+
+            message.From.Add(BRAMR_EMAIL);
+
+            message.To.Add(new MailboxAddress(username, email));
+
+            message.Subject = "Your Bramr password has been changed";
+
+            var builder = new BodyBuilder
             {
-                IsBodyHtml = true
+                HtmlBody = await mailGen.GeneratePasswordChangedMail(username)
             };
-            mail.AlternateViews.Add(GetEmbeddedImage(password, username, res).Result);
-            mail.From = new MailAddress("bramrinfo@gmail.com");
-            mail.To.Add(email);
-            mail.Subject = "Registration on Bramr!";
-            return mail;
+
+            message.Body = builder.ToMessageBody();
+
+            SendEmail(message);
         }
 
-
-
-        private async Task<AlternateView> GetEmbeddedImage(string password, string username, LinkedResource res)
+        public async void SendPasswordForgottenEmail(string email, string username, string token)
         {
-            res.ContentId = Guid.NewGuid().ToString();
-            var htmlBody = await mailGen.GenerateRegistrationMail(username, password, @"<img src='cid:" + res.ContentId + @"'/>");
-            AlternateView alternateView = AlternateView.CreateAlternateViewFromString(htmlBody, null, MediaTypeNames.Text.Html);
-            alternateView.LinkedResources.Add(res);
+#if DEBUG
+            var link = $@"https://localhost:44309/password/recovery?Token={token}";
+#else
+            var link = @$"https://bramr.tech/password/recovery?Token={token}";
+#endif
 
-            return alternateView;
+            var message = new MimeMessage();
+
+            message.From.Add(BRAMR_EMAIL);
+
+            message.To.Add(new MailboxAddress(username, email));
+
+            message.Subject = "Password recovery";
+
+            var builder = new BodyBuilder
+            {
+                HtmlBody = await mailGen.GeneratePasswordRecoveryMail(username, link)
+            };
+
+            message.Body = builder.ToMessageBody();
+
+            SendEmail(message);
+        }
+
+        public async void SendContactMail(string recipientEmail, string recipientName, string sendersName, string sendersEmail, string message, string service)
+        {
+            var mail = new MimeMessage();
+
+            mail.From.Add(BRAMR_EMAIL);
+
+            mail.To.Add(new MailboxAddress(recipientName, recipientEmail));
+
+            mail.Subject = $@"{sendersName} has contacten you through Bramr.";
+
+            var builder = new BodyBuilder
+            {
+                HtmlBody = await mailGen.GenerateContactMail(recipientName, sendersName, sendersEmail, message)
+            };
+
+            mail.Body = builder.ToMessageBody();
+        }
+
+        private async void SendEmail(MimeMessage email)
+        {
+            try
+            {
+                using var client = new SmtpClient();
+                await client.ConnectAsync("smtp.gmail.com", 465, true);
+                await client.AuthenticateAsync("bramrinfo@gmail.com", "4*zhKqq6=Z9-#A=%");
+                await client.SendAsync(email);
+                await client.DisconnectAsync(true);
+            }
+            catch (Exception e)
+            {
+                Sentry.SentrySdk.CaptureException(e);
+            }
+        }
+
+        private async Task<MimeMessage> GetMailWithImg(string email, string password, string username, string res)
+        {
+            var message = new MimeMessage();
+
+            message.From.Add(BRAMR_EMAIL);
+            
+            message.To.Add(new MailboxAddress(username, email));
+            
+            message.Subject = "Registration on Bramr!";
+
+            message.Body = await GetEmbeddedImage(password, username, res);
+
+            return message;
+        }
+
+        private async Task<MimeEntity> GetEmbeddedImage(string password, string username, string res)
+        {
+            var builder = new BodyBuilder();
+
+            var embeddedImage = builder.LinkedResources.Add(res);
+
+            embeddedImage.ContentId = MimeUtils.GenerateMessageId();
+
+            builder.HtmlBody = await mailGen.GenerateRegistrationMail(username, password, $@"<center><img src=""cid:{embeddedImage.ContentId}""></center>");
+
+            return builder.ToMessageBody();
         }
     }
 }
