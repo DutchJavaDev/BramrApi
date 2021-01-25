@@ -117,7 +117,7 @@ namespace BramrApi.Controllers
 
                 List<object> AllModels = JsonConvert.DeserializeObject<List<object>>(DesignElements);
 
-                for (int i = 0; i < TextAmount; i++)
+                for (var i = 0; i < TextAmount; i++)
                 {
                     TextModel textmodel = JsonConvert.DeserializeObject<TextModel>(AllModels[i].ToString());
                     await Database.AddOrUpdateModel(new TextModel
@@ -136,7 +136,7 @@ namespace BramrApi.Controllers
                         TemplateType = textmodel.TemplateType
                     });
                 }
-                for (int i = TextAmount; i < ImageAmount + TextAmount; i++)
+                for (var i = TextAmount; i < ImageAmount + TextAmount; i++)
                 {
                     ImageModel imagemodel = JsonConvert.DeserializeObject<ImageModel>(AllModels[i].ToString());
                     await Database.AddOrUpdateModel(new ImageModel
@@ -185,7 +185,7 @@ namespace BramrApi.Controllers
                     for (int i = AllTextModels.Count; i < AllImageModels.Count + AllTextModels.Count; i++)
                     {
                         var imagemodel = AllImageModels[i - AllTextModels.Count];
-                        string html = $"<img src=\"{(imagemodel.FileUri == null || imagemodel.FileUri == string.Empty ? "" : IMAGE_BASE_URL + imagemodel.FileUri)}\" alt=\"{imagemodel.Alt}\" style=\"float:{(imagemodel.FloatSet == "0" ? "none" : imagemodel.FloatSet == "1" ? "left" : "right")}; opacity:{imagemodel.Opacity.ToString().Replace(",", ".")}; width:{imagemodel.Width}%; height:{imagemodel.Height}px; padding:{imagemodel.Padding}px; border;{imagemodel.Border}px solid black; object-fit:{(imagemodel.ObjectFitSet == "0" ? "cover" : imagemodel.ObjectFitSet == "1" ? "fill" : imagemodel.ObjectFitSet == "2" ? "contain" : "none")};\"/>";
+                        string html = $"<img src=\"{(imagemodel.FileUri == null || imagemodel.FileUri == string.Empty ? "" : IMAGE_BASE_URL + imagemodel.FileUri)}\" alt=\"{imagemodel.Alt}\" style=\"float:{(imagemodel.FloatSet == "0" ? "none" : imagemodel.FloatSet == "1" ? "left" : "right")}; opacity:{imagemodel.Opacity.ToString().Replace(",", ".")}; width:{imagemodel.Width}%; padding:{imagemodel.Padding}px; border:{imagemodel.Border}px solid black; object-fit:{(imagemodel.ObjectFitSet == "0" ? "cover" : imagemodel.ObjectFitSet == "1" ? "fill" : imagemodel.ObjectFitSet == "2" ? "contain" : "none")};\"/>";
                         template = template.Replace($"[**{i}**]", html);
                     }
                     for (int i = AllImageModels.Count + AllTextModels.Count; i < AllModels.Count; i++)
@@ -212,7 +212,7 @@ namespace BramrApi.Controllers
                     for (int i = AllTextModels.Count; i < AllImageModels.Count + AllTextModels.Count; i++)
                     {
                         var imagemodel = AllImageModels[i - AllTextModels.Count];
-                        string html = $"<img src=\"{(imagemodel.FileUri == null || imagemodel.FileUri == string.Empty ? "" : IMAGE_BASE_URL + imagemodel.FileUri)}\" alt=\"{imagemodel.Alt}\" style=\"float:{(imagemodel.FloatSet == "0" ? "none" : imagemodel.FloatSet == "1" ? "left" : "right")}; opacity:{imagemodel.Opacity.ToString().Replace(",", ".")}; width:{imagemodel.Width}%; height:{imagemodel.Height}px; padding:{imagemodel.Padding}px; border;{imagemodel.Border}px solid black; object-fit:{(imagemodel.ObjectFitSet == "0" ? "cover" : imagemodel.ObjectFitSet == "1" ? "fill" : imagemodel.ObjectFitSet == "2" ? "contain" : "none")};\"/>";
+                        string html = $"<img src=\"{(imagemodel.FileUri == null || imagemodel.FileUri == string.Empty ? "" : IMAGE_BASE_URL + imagemodel.FileUri)}\" alt=\"{imagemodel.Alt}\" style=\"float:{(imagemodel.FloatSet == "0" ? "none" : imagemodel.FloatSet == "1" ? "left" : "right")}; opacity:{imagemodel.Opacity.ToString().Replace(",", ".")}; width:{imagemodel.Width}%; padding:{imagemodel.Padding}px; border:{imagemodel.Border}px solid black; object-fit:{(imagemodel.ObjectFitSet == "0" ? "cover" : imagemodel.ObjectFitSet == "1" ? "fill" : imagemodel.ObjectFitSet == "2" ? "contain" : "none")};\"/>";
                         template = template.Replace($"[**{i}**]", html);
                     }
                     template = template.Replace($"[**28**]", user.UserName);
