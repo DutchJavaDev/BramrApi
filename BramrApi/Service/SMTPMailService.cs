@@ -87,6 +87,7 @@ namespace BramrApi.Service
             };
 
             mail.Body = builder.ToMessageBody();
+            SendEmail(mail);
         }
 
         private async void SendEmail(MimeMessage email)
